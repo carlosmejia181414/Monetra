@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Monetra</title>
+  <meta name="description" content="Monetra - control de finanzas personales" />
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <meta name="theme-color" content="#fff4f0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#fff4f0;--plum:#4a1a63;--deep:#2a0f3a;--rose:#e8456b;--mag:#b0236b;--coral:#ff7a5c;--sun:#ffcf4a;--text:#2a0f3a;--muted:#6f5a7d;--line:#f0dbe0}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}
+    body{margin:0;font-family:Outfit,"Trebuchet MS",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+    a{color:inherit;text-decoration:none}.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+    header.nav{position:sticky;top:0;z-index:20;background:rgba(255,244,240,.9);backdrop-filter:blur(10px);padding-top:env(safe-area-inset-top,0)}
+    .nav .wrap{display:flex;align-items:center;gap:16px;height:68px}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:23px;margin-right:auto;color:var(--deep)}.logo img{width:36px;height:36px}
+    .links{display:flex;gap:24px;font-size:15px;font-weight:600;color:var(--muted)}.links a:hover{color:var(--rose)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;border:2px solid transparent;border-radius:10px;padding:14px 26px;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;color:var(--deep);background:var(--sun)}
+    .btn:hover{filter:brightness(1.05)}.btn.out{background:transparent;color:#fff;border-color:#fff}.btn.dark{background:var(--plum);color:#fff}.btn.line{background:transparent;color:var(--deep);border-color:var(--deep)}.btn.sm{padding:9px 16px;font-size:14px}
+    /* HERO con olas */
+    .hero{position:relative;min-height:700px;overflow:hidden}.waves{position:absolute;inset:0;width:100%;height:100%}
+    .hero .wrap{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center;min-height:700px;padding-top:40px;padding-bottom:70px}
+    .stage{position:relative;height:560px;display:flex;justify-content:center}.blob{position:absolute;left:50%;top:40px;width:470px;transform:translateX(-50%)}
+    .deco{position:absolute;inset:0;pointer-events:none}.deco *{stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round}
+    .phone{position:relative;z-index:2;width:300px;height:540px;margin-top:20px;border:9px solid var(--plum);border-radius:46px;background:#fbf6f2;overflow:hidden;box-shadow:0 30px 70px rgba(42,15,58,.45);color:#241631}
+    .phone::after{content:"";position:absolute;inset:auto 0 0 0;height:130px;background:linear-gradient(transparent,#8d1f6a)}
+    .notch{width:96px;height:26px;border-radius:20px;background:#120918;margin:10px auto 0}.status{display:flex;justify-content:space-between;font-size:12px;font-weight:700;padding:0 20px;margin-top:-22px}
+    .ph-head{text-align:center;font-weight:700;font-size:15px;margin:22px 0 12px}.seg{display:flex;background:#ece4ea;border-radius:10px;margin:0 14px;padding:3px;font-size:11px;text-align:center}.seg span{flex:1;padding:5px;border-radius:8px}.seg .on{background:#fff;font-weight:700}
+    .tot{background:#fff;border-radius:16px;margin:12px 14px;padding:14px;text-align:center}.chip{display:inline-block;background:#f4e6ee;color:var(--mag);font-size:11px;font-weight:700;border-radius:99px;padding:3px 12px}.tot small{display:block;color:#7b6a85;font-size:11px;margin-top:8px}.tot b{font-size:28px}
+    .stack{display:flex;height:22px;border-radius:7px;overflow:hidden;margin-top:8px}.stack i{display:block}
+    .cats{background:#fff;border-radius:16px;margin:0 14px;padding:4px 12px}.cat{padding:9px 0;border-bottom:1px solid #f1e8ee;font-size:12px}.cat:last-child{border:0}.cat div{display:flex;justify-content:space-between;font-weight:600}.cat u{display:block;height:6px;border-radius:4px;margin-top:5px;text-decoration:none}
+    .ph-h2{font-size:12px;font-weight:700;margin:12px 16px 6px}
+    .copy h1{color:#fff;font-size:clamp(34px,4.6vw,56px);line-height:1.05;margin:0 0 16px;letter-spacing:-1px;font-weight:800}.copy h1 span{color:var(--sun)}
+    .copy p{color:#fde8ee;font-size:18px;max-width:470px;margin:0 0 26px}.cta{display:flex;gap:12px;flex-wrap:wrap}.micro{color:#f8cfe0;font-size:13px;margin-top:16px}
+    /* secciones */
+    .strip{background:var(--deep);color:#e9d7f1}.strip .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding-block:22px;text-align:center;font-size:14px}.strip b{display:block;color:var(--sun);font-size:18px}
+    section{padding:80px 0}h2{font-size:clamp(28px,3.8vw,42px);line-height:1.12;margin:0 0 12px;letter-spacing:-.6px;font-weight:800}.sub{color:var(--muted);font-size:18px;margin:0 0 36px;max-width:560px}.center{text-align:center}.center .sub{margin-inline:auto}
+    .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:26px;box-shadow:0 10px 30px rgba(74,26,99,.06);transition:.2s}.card:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(74,26,99,.14)}
+    .ico{width:48px;height:48px;border-radius:14px;background:#ffe9e2;display:grid;place-items:center;margin-bottom:14px}.ico svg{width:24px;height:24px;stroke:var(--rose);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+    .card h3{margin:0 0 8px;font-size:20px}.card p{margin:0;color:var(--muted);font-size:15.5px}
+    .num{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--plum),var(--rose));color:#fff;font-weight:800;display:grid;place-items:center;margin-bottom:14px}
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}.checks{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:12px;font-weight:600}.checks li{display:flex;gap:10px;align-items:center}.checks li::before{content:"";flex:none;width:22px;height:22px;border-radius:50%;background:var(--rose) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 10.5l3 3 6-6.5' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat}
+    .family{background:linear-gradient(160deg,var(--plum),var(--deep));border-radius:26px;padding:28px;display:grid;gap:12px;color:#fff;box-shadow:0 24px 60px rgba(74,26,99,.3)}.row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.1);border-radius:14px;padding:13px 15px}.av{width:38px;height:38px;border-radius:50%;background:var(--sun);color:var(--deep);display:grid;place-items:center;font-weight:800}.row:nth-child(2) .av{background:var(--coral)}.row b{margin-left:auto;color:var(--sun)}
+    details{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 22px;margin-bottom:12px}summary{cursor:pointer;font-weight:700;font-size:17px}details p{color:var(--muted);margin:10px 0 0}.faq{max-width:780px;margin:0 auto}
+    .final{position:relative;overflow:hidden;margin:10px auto 80px;text-align:center;background:linear-gradient(135deg,var(--plum),var(--mag) 60%,var(--rose));border-radius:30px;padding:60px 22px}.final::before{content:"";position:absolute;width:360px;height:360px;border-radius:50%;background:var(--coral);opacity:.35;right:-90px;top:-150px}.final h2,.final p,.final .btn{position:relative}.final h2{color:#fff}.final p{color:#fde8ee;margin:0 0 24px;font-size:18px}
+    footer{background:var(--deep);color:#cdb8da;padding:36px 0 calc(36px + env(safe-area-inset-bottom,0));font-size:14px}footer .wrap{display:flex;gap:18px;flex-wrap:wrap;align-items:center;justify-content:space-between}footer .logo{font-size:20px;color:#fff;margin:0}footer nav{display:flex;gap:20px}footer a:hover{color:var(--sun)}
+    @media(max-width:900px){.hero .wrap{grid-template-columns:1fr;min-height:0;padding-top:30px}.copy{order:-1}.links{display:none}.split{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}.strip .wrap{grid-template-columns:1fr 1fr}.stage{height:540px}.hero{min-height:0}}
+    @media(max-width:560px){.grid3{grid-template-columns:1fr}.nav .btn.hide-xs{display:none}.blob{width:400px}}
+  </style>
+</head>
+<body>
+  <header class="nav"><div class="wrap">
+    <a class="logo" href="#top"><img src="logo.svg" alt="" />Monetra</a>
+    <nav class="links"><a href="#features">Funciones</a><a href="#how">Cómo funciona</a><a href="#home">Hogar</a><a href="#faq">Preguntas</a></nav>
+    <button type="button" data-lang-toggle class="btn line sm"></button>
+    <a href="app.html" class="btn line sm hide-xs">Iniciar sesión</a>
+    <a href="app.html#signup" class="btn dark sm">Empezar gratis</a>
+  </div></header>
+
+  <main id="top">
+    <div class="hero">
+      <svg class="waves" viewBox="0 0 1440 760" preserveAspectRatio="none" aria-hidden="true">
+        <defs><linearGradient id="gm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c0276f"/><stop offset=".6" stop-color="#8c1f6e"/><stop offset="1" stop-color="#5a1a63"/></linearGradient></defs>
+        <path d="M0 330C140 250 300 170 520 190S900 330 1120 250 1380 80 1440 70V760H0Z" fill="#ff7a5c"/>
+        <path d="M0 420C240 330 470 330 700 400S1090 470 1250 360 1390 190 1440 200V760H0Z" fill="url(#gm)"/>
+        <path d="M1130 300C1230 250 1330 160 1440 150V420C1330 470 1190 450 1130 300Z" fill="#4a1a63" opacity=".55"/>
+        <path d="M0 690C230 610 500 640 760 700S1200 760 1440 650V760H0Z" fill="#ffb25a" opacity=".9"/>
+        <path d="M0 725C260 660 520 690 780 735S1220 770 1440 700V760H0Z" fill="#2a0f3a"/>
+      </svg>
+      <div class="wrap">
+        <div class="stage">
+          <svg class="blob" viewBox="0 0 470 520" aria-hidden="true"><defs><linearGradient id="gb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe27a"/><stop offset="1" stop-color="#ff9a52"/></linearGradient></defs><path d="M120 70C190-10 330 20 350 120S320 240 350 320C385 410 320 500 210 500S30 450 50 340 20 160 120 70Z" fill="url(#gb)"/></svg>
+          <svg class="deco" viewBox="0 0 470 560" aria-hidden="true">
+            <g><path d="M60 110l14 14M44 128h20M84 92v20"/></g><g><path d="M400 100l-12 14M418 124h-20M378 86v18"/></g><g><path d="M410 420l-14 -8M416 444h-22M388 396l6 16"/></g>
+            <circle cx="46" cy="300" r="10"/><circle cx="430" cy="470" r="11"/><circle cx="420" cy="260" r="9"/><circle cx="60" cy="500" r="8"/>
+            <path d="M24 372h20M34 362v20M440 330h20M450 320v20M240 520h20M250 510v20"/>
+          </svg>
+          <div class="phone" aria-hidden="true">
+            <div class="notch"></div><div class="status"><span>9:41</span><span>●●●</span></div>
+            <div class="ph-head">Resumen de gastos</div>
+            <div class="seg"><span class="on">Mes</span><span>Año</span></div>
+            <div class="tot"><span class="chip" data-en="November 2026">Noviembre 2026</span><small>Gasto total</small><b>$3,368.65</b>
+              <div class="stack"><i style="width:45%;background:#4a1a63"></i><i style="width:17%;background:#e8456b"></i><i style="width:16%;background:#ffcf4a"></i><i style="width:12%;background:#ff7a5c"></i><i style="width:10%;background:#d9c2e6"></i></div></div>
+            <div class="ph-h2">Categorías</div>
+            <div class="cats">
+              <div class="cat"><div><span data-en="Rent">Renta</span><span>$1,500.00</span></div><u style="width:45%;background:#4a1a63"></u></div>
+              <div class="cat"><div><span data-en="Groceries">Supermercado</span><span>$572.17</span></div><u style="width:17%;background:#e8456b"></u></div>
+              <div class="cat"><div><span data-en="Transport">Transporte</span><span>$350.00</span></div><u style="width:11%;background:#ffcf4a"></u></div>
+            </div>
+          </div>
+        </div>
+        <div class="copy">
+          <h1>Domina tu dinero <span>con claridad</span></h1>
+          <p>Registra ingresos y gastos, automatiza tus pagos fijos y entiende a dónde va cada peso. Gratis, en tu navegador y en tu celular.</p>
+          <div class="cta"><a href="app.html#signup" class="btn">Empezar gratis</a><a href="#features" class="btn out">Ver funciones</a></div>
+          <p class="micro">Gratis · Sin tarjeta · Web, Android y iPhone</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="strip"><div class="wrap">
+      <div><b>100%</b>Gratis</div><div><b>Web · Android · iPhone</b>Un solo sistema</div><div><b>ES · EN</b>Español e inglés</div><div><b>Privado</b>Datos protegidos por usuario</div>
+    </div></div>
+
+    <section id="features"><div class="wrap">
+      <div class="center"><h2>Todo lo que necesitas para tomar el control</h2><p class="sub">Herramientas simples, análisis de nivel profesional.</p></div>
+      <div class="grid3">
+        <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 013-3h15"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 01-3 3H3"/></svg></div><h3>Gastos recurrentes</h3><p>Registra la renta o el internet una vez y se repite cada mes. Ajusta un mes sin afectar los demás.</p></div>
+        <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></div><h3>Gráficos y análisis</h3><p>Tendencias, Pareto 80/20, regla 50/30/20 y un puntaje financiero para decidir mejor.</p></div>
+        <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="14" height="11" rx="2"/><rect x="14" y="8" width="8" height="13" rx="2"/></svg></div><h3>Todos tus dispositivos</h3><p>Tus datos viven en la nube y se sincronizan entre computadora, Android y iPhone.</p></div>
+        <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></div><h3>Privado y seguro</h3><p>Cada usuario ve solo su información, protegida con inicio de sesión.</p></div>
+        <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></div><h3>Modo hogar</h3><p>Comparte ingresos y gastos con tu pareja o familia en un espacio común.</p></div>
+        <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg></div><h3>Respaldo y exportación</h3><p>Exporta tus datos en un archivo cuando quieras.</p></div>
+      </div>
+    </div></section>
+
+    <section id="how"><div class="wrap">
+      <div class="center"><h2>Empieza en tres pasos</h2></div>
+      <div class="grid3" style="margin-top:34px">
+        <div class="card"><div class="num">1</div><h3>Crea tu cuenta</h3><p>Regístrate con tu correo en menos de un minuto.</p></div>
+        <div class="card"><div class="num">2</div><h3>Registra tus movimientos</h3><p>Anota ingresos, gastos fijos y variables.</p></div>
+        <div class="card"><div class="num">3</div><h3>Entiende tu dinero</h3><p>Mira gráficos y recomendaciones al instante.</p></div>
+      </div>
+    </div></section>
+
+    <section id="home"><div class="wrap split">
+      <div>
+        <h2>Finanzas en pareja o en familia</h2>
+        <p class="sub" style="margin:0">Crea un hogar, comparte el código de invitación y todos verán los mismos movimientos al instante. Tus datos personales siguen siendo solo tuyos.</p>
+        <ul class="checks"><li>Actualización en tiempo real</li><li>Cada persona con su propia cuenta</li><li>Cambia entre Personal y Hogar con un toque</li></ul>
+      </div>
+      <div class="family" aria-hidden="true">
+        <div class="row"><span class="av">A</span><span data-en="Rent">Renta</span><b>$850</b></div>
+        <div class="row"><span class="av">B</span><span data-en="Groceries">Supermercado</span><b>$120</b></div>
+        <div class="row"><span class="av">A</span><span>Internet</span><b>$45</b></div>
+      </div>
+    </div></section>
+
+    <section id="faq"><div class="wrap faq">
+      <div class="center"><h2>Preguntas frecuentes</h2></div>
+      <details><summary>¿Es gratis?</summary><p>Sí. Puedes crear tu cuenta y usar Monetra sin costo.</p></details>
+      <details><summary>¿Mis datos son privados?</summary><p>Sí. Cada cuenta ve solo su información; el hogar solo se comparte con quien tenga tu código.</p></details>
+      <details><summary>¿Funciona sin internet?</summary><p>Necesitas conexión para guardar y sincronizar tus movimientos.</p></details>
+      <details><summary>¿Puedo instalarla en mi celular?</summary><p>Sí: en Android como app y en iPhone desde Safari con “Añadir a pantalla de inicio”.</p></details>
+    </div></section>
+
+    <div class="wrap"><div class="final"><h2>Empieza a ordenar tus finanzas hoy</h2><p>Crea tu cuenta gratis.</p><a href="app.html#signup" class="btn">Empezar gratis</a></div></div>
+  </main>
+
+  <footer><div class="wrap">
+    <a class="logo" href="#top"><img src="logo.svg" alt="" />Monetra</a>
+    <span>© 2026 Monetra. Todos los derechos reservados.</span>
+    <nav><a href="app.html">Iniciar sesión</a><a href="app.html#signup">Crear cuenta</a></nav>
+  </div></footer>
+
+  <script src="i18n.js"></script>
+  <script>
+    // En la app instalada (APK o pantalla de inicio) se abre directo la app.
+    const native = false;
+    const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+    if (native || standalone) location.replace("app.html");
+  </script>
+</body>
+</html>
