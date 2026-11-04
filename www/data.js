@@ -5,7 +5,8 @@
  */
 (function () {
   const cfg = window.APP_CONFIG || {};
-  const configured = !!(cfg.SUPABASE_URL && cfg.SUPABASE_ANON_KEY && window.supabase);
+  const placeholder = /PEGA|TU-PROYECTO|TU_CLAVE/i.test(String(cfg.SUPABASE_URL) + String(cfg.SUPABASE_ANON_KEY));
+  const configured = !!(cfg.SUPABASE_URL && cfg.SUPABASE_ANON_KEY && window.supabase) && !placeholder;
   const client = configured
     ? window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, {
         auth: { persistSession: true, autoRefreshToken: true }
@@ -298,4 +299,14 @@
     deleteCategory,
     importDB
   };
+
+  // Sin configuración (config.js ausente o sin completar) las funciones fallan con un mensaje claro.
+  Object.keys(window.Data).forEach(name => {
+    if (name === "isConfigured" || typeof window.Data[name] !== "function") return;
+    const fn = window.Data[name];
+    window.Data[name] = (...args) => {
+      if (!client) throw new Error("Falta configurar la base de datos (archivo config.js).");
+      return fn(...args);
+    };
+  });
 })();

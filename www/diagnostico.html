@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Monetra · Diagnóstico</title>
+<style>
+  body{font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:#fff4f0;color:#2a0f3a;margin:0;padding:20px}
+  .box{max-width:760px;margin:0 auto}h1{margin:0 0 4px}p.sub{color:#6f5a7d;margin:0 0 18px}
+  .row{display:flex;gap:10px;background:#fff;border:1px solid #f0dbe0;border-radius:12px;padding:12px 14px;margin-bottom:8px;align-items:flex-start}
+  .ic{width:22px;flex:none;font-size:18px}.t b{display:block}.t small{color:#6f5a7d;word-break:break-word}
+  button{background:#4a1a63;color:#fff;border:0;border-radius:10px;padding:12px 18px;font-weight:700;cursor:pointer;margin:6px 8px 0 0}
+  button.alt{background:#e8456b}.ok .ic::before{content:"✅"}.bad .ic::before{content:"❌"}.warn .ic::before{content:"⚠️"}.wait .ic::before{content:"⏳"}
+</style>
+</head>
+<body><div class="box">
+  <h1>Diagnóstico de Monetra</h1>
+  <p class="sub">Esta página revisa por qué la app no carga. Haz una captura de pantalla de TODA la lista y envíala.</p>
+  <div id="out"></div>
+  <button id="clean" class="alt">Limpiar caché y service workers</button>
+  <button onclick="location.href='app.html'">Ir a la app</button>
+  <button onclick="location.href='index.html'">Ir al inicio</button>
+</div>
+<script src="vendor/supabase.js?v=4"></script>
+<script src="config.js?v=4"></script>
+<script>
+const out = document.getElementById("out");
+function row(state, title, detail) {
+  const d = document.createElement("div"); d.className = "row " + state;
+  d.innerHTML = '<span class="ic"></span><div class="t"><b></b><small></small></div>';
+  d.querySelector("b").textContent = title; d.querySelector("small").textContent = detail || ""; out.appendChild(d); return d;
+}
+const withTimeout = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("tiempo agotado (" + ms / 1000 + " s)")), ms))]);
+const cfg = window.APP_CONFIG || {};
+(async () => {
+  row("ok", "La página se está ejecutando (JavaScript funciona)", navigator.userAgent);
+  row(cfg.SUPABASE_URL ? "ok" : "bad", "Archivo config.js", cfg.SUPABASE_URL ? "URL: " + cfg.SUPABASE_URL : "No se cargó config.js: falta subirlo a GitHub dentro de la carpeta www/");
+  const keyOk = cfg.SUPABASE_ANON_KEY && !/PEGA|TU_CLAVE/i.test(cfg.SUPABASE_ANON_KEY);
+  row(keyOk ? "ok" : "bad", "Clave pública (SUPABASE_ANON_KEY)", keyOk ? "Presente: " + cfg.SUPABASE_ANON_KEY.slice(0, 14) + "…  (" + cfg.SUPABASE_ANON_KEY.length + " caracteres)" : "Falta pegar tu clave pública en config.js");
+  if (/\/rest\/v1|\/$/.test(cfg.SUPABASE_URL || "")) row("bad", "La URL termina en / o en /rest/v1", "Debe ser solo: https://TU-PROYECTO.supabase.co");
+  row(window.supabase ? "ok" : "bad", "Librería de base de datos (vendor/supabase.js)", window.supabase ? "Cargada" : "No se cargó el archivo vendor/supabase.js");
+  for (const f of ["app.html", "app.js", "data.js", "i18n.js", "styles.css", "logo.png", "flags/fr.svg", "vendor/chart.umd.min.js"]) {
+    try { const r = await withTimeout(fetch(f + "?d=" + Date.now(), { cache: "no-store" }), 6000); row(r.ok ? "ok" : "bad", "Archivo " + f, "Respuesta " + r.status); }
+    catch (e) { row("bad", "Archivo " + f, String(e.message)); }
+  }
+  if (cfg.SUPABASE_URL && keyOk) {
+    const h = { apikey: cfg.SUPABASE_ANON_KEY };
+    try {
+      const r = await withTimeout(fetch(cfg.SUPABASE_URL + "/auth/v1/settings", { headers: h }), 9000);
+      if (r.ok) { const s = await r.json(); const ext = s.external || {};
+        row("ok", "Conexión con tu proyecto de Supabase", "Respuesta " + r.status);
+        row(ext.google ? "ok" : "warn", "Inicio con Google en Supabase", ext.google ? "Activado" : "NO activado (Authentication > Sign In / Providers > Google)");
+        row(s.disable_signup ? "warn" : "ok", "Registro de usuarios nuevos", s.disable_signup ? "Desactivado" : "Permitido");
+        row(s.mailer_autoconfirm ? "warn" : "ok", "Confirmación de correo", s.mailer_autoconfirm ? "Desactivada (entran sin confirmar)" : "Activada");
+      } else row("bad", "Conexión con tu proyecto de Supabase", "Respuesta " + r.status + " · revisa URL y clave");
+    } catch (e) { row("bad", "Conexión con tu proyecto de Supabase", String(e.message) + " · revisa que la URL sea correcta y que el proyecto no esté pausado"); }
+    for (const [label, q] of [["Tabla categories", "categories?select=id&limit=1"], ["Columna household_id (modo hogar)", "categories?select=household_id&limit=1"], ["Tabla households (modo hogar)", "households?select=id&limit=1"]]) {
+      try { const r = await withTimeout(fetch(cfg.SUPABASE_URL + "/rest/v1/" + q, { headers: h }), 9000);
+        if (r.ok) row("ok", label, "Existe"); else { const j = await r.json().catch(() => ({})); row("bad", label, "No disponible · " + (j.message || r.status) + " · ejecuta el SQL en Supabase (instalar-todo.sql o hogar.sql)"); } }
+      catch (e) { row("bad", label, String(e.message)); }
+    }
+    if (window.supabase) {
+      try { const c = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY); const { data } = await withTimeout(c.auth.getSession(), 6000);
+        row("ok", "Lectura de sesión", data.session ? "Sesión iniciada: " + data.session.user.email : "Sin sesión (normal si no has entrado)"); }
+      catch (e) { row("bad", "Lectura de sesión", String(e.message) + " · pulsa «Limpiar caché» y prueba en ventana privada"); }
+    }
+  }
+  try { const regs = await navigator.serviceWorker.getRegistrations(); const ks = await caches.keys();
+    row(regs.length || ks.length ? "warn" : "ok", "Service workers y cachés guardados", regs.length + " service workers, " + ks.length + " cachés" + (regs.length || ks.length ? " · pulsa «Limpiar caché»" : "")); }
+  catch (e) { row("ok", "Service workers y cachés", "No disponibles en este navegador"); }
+  row("ok", "Idioma guardado", localStorage.getItem("mb_lang") || "(automático) " + navigator.language);
+  row("wait", "Fin del diagnóstico", "Si todo está en ✅ y la app igual no carga, envía la captura.").className = "row ok";
+})();
+document.getElementById("clean").onclick = async () => {
+  try { for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister(); for (const k of await caches.keys()) await caches.delete(k); } catch (e) {}
+  alert("Listo. Se recargará la página."); location.reload();
+};
+</script>
+</body></html>

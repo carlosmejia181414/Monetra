@@ -7,6 +7,7 @@ Monetra es una página web de finanzas personales. Los datos se guardan en una b
 monetra/
 ├─ www/                      <- la página web (esto es lo que se publica)
 │  ├─ index.html             Página de presentación (landing)
+│  ├─ diagnostico.html       Revisa por qué algo no carga (envía su captura si hay problemas)
 │  ├─ app.html               La aplicación (login, registro y finanzas)
 │  ├─ app.js                 Lógica de la aplicación
 │  ├─ data.js                Conexión con la base de datos (Supabase)
@@ -51,7 +52,7 @@ monetra/
 3. NUNCA uses ni compartas la clave **secret** o **service_role**. La clave pública sí puede estar en la página: la protección la dan el inicio de sesión y las reglas de seguridad (RLS) del SQL.
 
 ## PARTE 2 - Configurar la página
-1. En la carpeta `www/`, copia `config.example.js` y llámalo `config.js`.
+1. Usa el archivo `config.js` que se entrega aparte (ya trae tu URL; solo falta tu clave) y colócalo dentro de `www/`. Si no lo tienes, copia `config.example.js` y llámalo `config.js`.
 2. Ábrelo y completa tus datos:
    ```js
    window.APP_CONFIG = {
@@ -149,6 +150,12 @@ Si ya tenías una cuenta con ese mismo correo, Supabase vincula ambas formas de 
    - Alternativa: abre la página en una ventana privada, o Ctrl + Shift + R.
 6. **Verificar:** debes ver las tres banderas, el logo y la ventana de login. Si algo falla, la app muestra un aviso en rojo con el motivo.
 
+## Página de diagnóstico (cuando algo no carga)
+Abre `https://TU-USUARIO.github.io/TU-REPO/diagnostico.html`. Revisa en segundos: si `config.js` y tu clave están bien, si los archivos existen, si Supabase responde, si Google está activado, si las tablas existen y si hay cachés viejas. Envía una captura de toda la lista. El botón **Limpiar caché y service workers** arregla la mayoría de casos de "página en blanco" o "cargando".
+
+## Avisos de GitHub Actions que NO son errores
+"Node.js 20 is deprecated" y "ubuntu-latest will migrate to Ubuntu 26" son avisos informativos. Si el deploy sale en verde ✅, no hay nada que corregir.
+
 ## Si el logo o el login no cargan
 | Síntoma | Qué hacer |
 |---|---|
@@ -163,7 +170,8 @@ Edita los archivos y ejecuta `git add .`, `git commit -m "cambio"` y `git push o
 ## Solución de problemas
 | Mensaje o síntoma | Causa y solución |
 |---|---|
-| "Falta configurar la base de datos (archivo config.js)" | No existe `www/config.js` o está vacío. Revisa la Parte 2 y vuelve a hacer push. |
+| "Falta configurar la base de datos (archivo config.js)" (también al pulsar el botón de Google) | No existe `www/config.js`, o todavía dice `PEGA_AQUI_TU_CLAVE_PUBLICA`. Pon tu URL y tu clave pública (Parte 2) y vuelve a hacer push. |
+| "Cannot read properties of null (reading 'auth')" | Es la misma causa: falta `config.js`. Con la versión actual ya aparece el mensaje claro. |
 | "La base de datos no está actualizada: ejecuta supabase/hogar.sql" | Falta ejecutar el SQL (Parte 1, paso 4). |
 | "Correo o contraseña incorrectos" | Datos erróneos o correo sin confirmar. |
 | El correo de confirmación abre una página que no existe | Revisa Site URL y Redirect URLs (Parte 3, paso 7). |

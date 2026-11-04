@@ -1917,6 +1917,7 @@ async function initApp() {
   if (!Data.isConfigured()) {
     showLogin("Falta configurar la base de datos (archivo config.js).");
     loginBtn.disabled = true;
+    googleBtn.disabled = true;
     return;
   }
 
@@ -1928,7 +1929,10 @@ async function initApp() {
   });
 
   try {
-    const session = await Data.getSession();
+    const session = await Promise.race([
+      Data.getSession(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Sin conexión con la base de datos. Revisa tu internet e inténtalo de nuevo.")), 8000))
+    ]);
     if (recovering) {
       showLogin(null, "reset");
     } else if (!session) {
