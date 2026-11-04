@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Monetra</title>
   <meta name="description" content="Monetra - control de finanzas personales" />
-  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
   <meta name="theme-color" content="#fff4f0" />
@@ -49,15 +49,16 @@
     details{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 22px;margin-bottom:12px}summary{cursor:pointer;font-weight:700;font-size:17px}details p{color:var(--muted);margin:10px 0 0}.faq{max-width:780px;margin:0 auto}
     .final{position:relative;overflow:hidden;margin:10px auto 80px;text-align:center;background:linear-gradient(135deg,var(--plum),var(--mag) 60%,var(--rose));border-radius:30px;padding:60px 22px}.final::before{content:"";position:absolute;width:360px;height:360px;border-radius:50%;background:var(--coral);opacity:.35;right:-90px;top:-150px}.final h2,.final p,.final .btn{position:relative}.final h2{color:#fff}.final p{color:#fde8ee;margin:0 0 24px;font-size:18px}
     footer{background:var(--deep);color:#cdb8da;padding:36px 0 calc(36px + env(safe-area-inset-bottom,0));font-size:14px}footer .wrap{display:flex;gap:18px;flex-wrap:wrap;align-items:center;justify-content:space-between}footer .logo{font-size:20px;color:#fff;margin:0}footer nav{display:flex;gap:20px}footer a:hover{color:var(--sun)}
+    .lang-switch{display:flex;gap:7px}.lang-switch button{width:32px;height:32px;min-height:0;padding:0;border-radius:50%;border:2px solid transparent;background:#fff;overflow:hidden;opacity:.6;cursor:pointer;box-shadow:0 1px 4px rgba(42,15,58,.25)}.lang-switch button.on{opacity:1;border-color:var(--rose)}.lang-switch img{width:100%;height:100%;object-fit:cover;display:block}
     @media(max-width:900px){.hero .wrap{grid-template-columns:1fr;min-height:0;padding-top:30px}.copy{order:-1}.links{display:none}.split{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}.strip .wrap{grid-template-columns:1fr 1fr}.stage{height:540px}.hero{min-height:0}}
     @media(max-width:560px){.grid3{grid-template-columns:1fr}.nav .btn.hide-xs{display:none}.blob{width:400px}}
   </style>
 </head>
 <body>
   <header class="nav"><div class="wrap">
-    <a class="logo" href="#top"><img src="logo.svg" alt="" />Monetra</a>
+    <a class="logo" href="#top"><img src="logo.png?v=3" alt="" />Monetra</a>
     <nav class="links"><a href="#features">Funciones</a><a href="#how">Cómo funciona</a><a href="#home">Hogar</a><a href="#faq">Preguntas</a></nav>
-    <button type="button" data-lang-toggle class="btn line sm"></button>
+    <div class="lang-switch" data-lang-switch></div>
     <a href="app.html" class="btn line sm hide-xs">Iniciar sesión</a>
     <a href="app.html#signup" class="btn dark sm">Empezar gratis</a>
   </div></header>
@@ -84,13 +85,13 @@
             <div class="notch"></div><div class="status"><span>9:41</span><span>●●●</span></div>
             <div class="ph-head">Resumen de gastos</div>
             <div class="seg"><span class="on">Mes</span><span>Año</span></div>
-            <div class="tot"><span class="chip" data-en="November 2026">Noviembre 2026</span><small>Gasto total</small><b>$3,368.65</b>
+            <div class="tot"><span class="chip" data-en="November 2026" data-fr="Novembre 2026">Noviembre 2026</span><small>Gasto total</small><b>$3,368.65</b>
               <div class="stack"><i style="width:45%;background:#4a1a63"></i><i style="width:17%;background:#e8456b"></i><i style="width:16%;background:#ffcf4a"></i><i style="width:12%;background:#ff7a5c"></i><i style="width:10%;background:#d9c2e6"></i></div></div>
             <div class="ph-h2">Categorías</div>
             <div class="cats">
-              <div class="cat"><div><span data-en="Rent">Renta</span><span>$1,500.00</span></div><u style="width:45%;background:#4a1a63"></u></div>
-              <div class="cat"><div><span data-en="Groceries">Supermercado</span><span>$572.17</span></div><u style="width:17%;background:#e8456b"></u></div>
-              <div class="cat"><div><span data-en="Transport">Transporte</span><span>$350.00</span></div><u style="width:11%;background:#ffcf4a"></u></div>
+              <div class="cat"><div><span data-en="Rent" data-fr="Loyer">Renta</span><span>$1,500.00</span></div><u style="width:45%;background:#4a1a63"></u></div>
+              <div class="cat"><div><span data-en="Groceries" data-fr="Épicerie">Supermercado</span><span>$572.17</span></div><u style="width:17%;background:#e8456b"></u></div>
+              <div class="cat"><div><span data-en="Transport" data-fr="Transport">Transporte</span><span>$350.00</span></div><u style="width:11%;background:#ffcf4a"></u></div>
             </div>
           </div>
         </div>
@@ -98,13 +99,13 @@
           <h1>Domina tu dinero <span>con claridad</span></h1>
           <p>Registra ingresos y gastos, automatiza tus pagos fijos y entiende a dónde va cada peso. Gratis, en tu navegador y en tu celular.</p>
           <div class="cta"><a href="app.html#signup" class="btn">Empezar gratis</a><a href="#features" class="btn out">Ver funciones</a></div>
-          <p class="micro">Gratis · Sin tarjeta · Web, Android y iPhone</p>
+          <p class="micro">Gratis · Sin tarjeta · En computadora y celular</p>
         </div>
       </div>
     </div>
 
     <div class="strip"><div class="wrap">
-      <div><b>100%</b>Gratis</div><div><b>Web · Android · iPhone</b>Un solo sistema</div><div><b>ES · EN</b>Español e inglés</div><div><b>Privado</b>Datos protegidos por usuario</div>
+      <div><b>100%</b>Gratis</div><div><b>Web · Android · iPhone</b>Un solo sistema</div><div><b>ES · EN · FR</b>Español, inglés y francés</div><div><b>Privado</b>Datos protegidos por usuario</div>
     </div></div>
 
     <section id="features"><div class="wrap">
@@ -112,7 +113,7 @@
       <div class="grid3">
         <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 013-3h15"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 01-3 3H3"/></svg></div><h3>Gastos recurrentes</h3><p>Registra la renta o el internet una vez y se repite cada mes. Ajusta un mes sin afectar los demás.</p></div>
         <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></div><h3>Gráficos y análisis</h3><p>Tendencias, Pareto 80/20, regla 50/30/20 y un puntaje financiero para decidir mejor.</p></div>
-        <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="14" height="11" rx="2"/><rect x="14" y="8" width="8" height="13" rx="2"/></svg></div><h3>Todos tus dispositivos</h3><p>Tus datos viven en la nube y se sincronizan entre computadora, Android y iPhone.</p></div>
+        <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="14" height="11" rx="2"/><rect x="14" y="8" width="8" height="13" rx="2"/></svg></div><h3>Todos tus dispositivos</h3><p>Tus datos viven en la nube y se sincronizan entre tu computadora y tu celular.</p></div>
         <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></div><h3>Privado y seguro</h3><p>Cada usuario ve solo su información, protegida con inicio de sesión.</p></div>
         <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></div><h3>Modo hogar</h3><p>Comparte ingresos y gastos con tu pareja o familia en un espacio común.</p></div>
         <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg></div><h3>Respaldo y exportación</h3><p>Exporta tus datos en un archivo cuando quieras.</p></div>
@@ -135,8 +136,8 @@
         <ul class="checks"><li>Actualización en tiempo real</li><li>Cada persona con su propia cuenta</li><li>Cambia entre Personal y Hogar con un toque</li></ul>
       </div>
       <div class="family" aria-hidden="true">
-        <div class="row"><span class="av">A</span><span data-en="Rent">Renta</span><b>$850</b></div>
-        <div class="row"><span class="av">B</span><span data-en="Groceries">Supermercado</span><b>$120</b></div>
+        <div class="row"><span class="av">A</span><span data-en="Rent" data-fr="Loyer">Renta</span><b>$850</b></div>
+        <div class="row"><span class="av">B</span><span data-en="Groceries" data-fr="Épicerie">Supermercado</span><b>$120</b></div>
         <div class="row"><span class="av">A</span><span>Internet</span><b>$45</b></div>
       </div>
     </div></section>
@@ -146,19 +147,19 @@
       <details><summary>¿Es gratis?</summary><p>Sí. Puedes crear tu cuenta y usar Monetra sin costo.</p></details>
       <details><summary>¿Mis datos son privados?</summary><p>Sí. Cada cuenta ve solo su información; el hogar solo se comparte con quien tenga tu código.</p></details>
       <details><summary>¿Funciona sin internet?</summary><p>Necesitas conexión para guardar y sincronizar tus movimientos.</p></details>
-      <details><summary>¿Puedo instalarla en mi celular?</summary><p>Sí: en Android como app y en iPhone desde Safari con “Añadir a pantalla de inicio”.</p></details>
+      <details><summary>¿Puedo instalarla en mi celular?</summary><p>Sí. Ábrela en el navegador de tu celular y agrégala a la pantalla de inicio desde el menú del navegador.</p></details>
     </div></section>
 
     <div class="wrap"><div class="final"><h2>Empieza a ordenar tus finanzas hoy</h2><p>Crea tu cuenta gratis.</p><a href="app.html#signup" class="btn">Empezar gratis</a></div></div>
   </main>
 
   <footer><div class="wrap">
-    <a class="logo" href="#top"><img src="logo.svg" alt="" />Monetra</a>
+    <a class="logo" href="#top"><img src="logo.png?v=3" alt="" />Monetra</a>
     <span>© 2026 Monetra. Todos los derechos reservados.</span>
     <nav><a href="app.html">Iniciar sesión</a><a href="app.html#signup">Crear cuenta</a></nav>
   </div></footer>
 
-  <script src="i18n.js"></script>
+  <script src="i18n.js?v=3"></script>
   <script>
     // En la app instalada (APK o pantalla de inicio) se abre directo la app.
     const native = false;

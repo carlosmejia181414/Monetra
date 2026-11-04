@@ -1,3 +1,4 @@
+const $ = id => document.getElementById(id) || document.createElement("div"); // tolerante si el HTML en caché es antiguo
 
 const pageTitle = document.getElementById("pageTitle");
 const navButtons = document.querySelectorAll(".nav-btn");
@@ -69,9 +70,12 @@ let editingTransactionId = null;
 let editingMonthOverride = null;
 let editingCategoryId = null;
 
-const monthNames = I18n.lang === "en"
-  ? ["January","February","March","April","May","June","July","August","September","October","November","December"]
-  : ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+const MONTHS = {
+  es: ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"],
+  en: ["January","February","March","April","May","June","July","August","September","October","November","December"],
+  fr: ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"]
+};
+const monthNames = MONTHS[I18n.lang] || MONTHS.es;
 
 const isMobile = () => window.innerWidth <= 520;
 
@@ -90,7 +94,7 @@ async function refreshData() {
 }
 
 function formatCurrency(value) {
-  return new Intl.NumberFormat(I18n.lang === "en" ? "en-CA" : "es-CA", {
+  return new Intl.NumberFormat(({ es: "es-CA", en: "en-CA", fr: "fr-CA" })[I18n.lang], {
     style: "currency",
     currency: "CAD"
   }).format(value || 0);
@@ -1729,8 +1733,8 @@ categoriesTable.addEventListener("click", event => {
 monthFilter.addEventListener("change", refreshDashboard);
 yearFilter.addEventListener("change", refreshDashboard);
 exportBtn.addEventListener("click", exportJSON);
-const importBtn = document.getElementById("importBtn");
-const importFile = document.getElementById("importFile");
+const importBtn = $("importBtn");
+const importFile = $("importFile");
 importBtn.addEventListener("click", () => importFile.click());
 importFile.addEventListener("change", () => {
   importJSONFile(importFile.files[0]);
@@ -1743,17 +1747,19 @@ window.addEventListener("resize", () => {
   resizeTimer = setTimeout(() => refreshDashboard(), 250);
 });
 
-const loginOverlay = document.getElementById("loginOverlay");
-const loginForm = document.getElementById("loginForm");
-const loginMessage = document.getElementById("loginMessage");
-const loginBtn = document.getElementById("loginBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const emailRow = document.getElementById("emailRow");
-const passRow = document.getElementById("passRow");
-const forgotLink = document.getElementById("forgotLink");
-const authTabs = document.getElementById("authTabs");
+const loginOverlay = $("loginOverlay");
+const loginForm = $("loginForm");
+const loginMessage = $("loginMessage");
+const loginBtn = $("loginBtn");
+const logoutBtn = $("logoutBtn");
+const emailRow = $("emailRow");
+const passRow = $("passRow");
+const forgotLink = $("forgotLink");
+const googleBtn = $("googleBtn");
+const orDivider = $("orDivider");
+const authTabs = $("authTabs");
 const inInstalledApp = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
-if (inInstalledApp) document.getElementById("loginBack").classList.add("hidden");
+if (inInstalledApp) $("loginBack").classList.add("hidden");
 document.addEventListener("keydown", event => {
   if (event.key === "Escape" && !inInstalledApp && !loginOverlay.classList.contains("hidden")) location.href = "index.html";
 });
@@ -1778,10 +1784,12 @@ function setAuthMode(mode, message) {
   emailRow.classList.toggle("hidden", mode === "reset");
   passRow.classList.toggle("hidden", mode === "forgot");
   forgotLink.classList.toggle("hidden", mode !== "login");
+  googleBtn.classList.toggle("hidden", mode === "forgot" || mode === "reset");
+  orDivider.classList.toggle("hidden", mode === "forgot" || mode === "reset");
   authTabs.classList.toggle("hidden", mode === "forgot" || mode === "reset");
-  document.getElementById("loginEmail").required = mode !== "reset";
-  document.getElementById("loginPassword").required = mode !== "forgot";
-  document.getElementById("loginPassword").autocomplete = mode === "login" ? "current-password" : "new-password";
+  $("loginEmail").required = mode !== "reset";
+  $("loginPassword").required = mode !== "forgot";
+  $("loginPassword").autocomplete = mode === "login" ? "current-password" : "new-password";
   authTabs.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.mode === mode));
 }
 
@@ -1797,8 +1805,8 @@ function hideLogin() {
 }
 
 let remoteRefreshTimer = null;
-const scopeSelect = document.getElementById("scopeSelect");
-const householdBox = document.getElementById("householdBox");
+const scopeSelect = $("scopeSelect");
+const householdBox = $("householdBox");
 let currentHousehold = null;
 
 async function reloadAll() {
@@ -1924,7 +1932,8 @@ async function initApp() {
     if (recovering) {
       showLogin(null, "reset");
     } else if (!session) {
-      showLogin(null, location.hash === "#signup" ? "signup" : "login");
+      const params = new URLSearchParams(location.hash.slice(1) || location.search);
+      showLogin(params.get("error_description"), location.hash === "#signup" ? "signup" : "login");
     } else {
       await enterApp();
     }
@@ -1933,6 +1942,15 @@ async function initApp() {
     showLogin(error.message || "No se pudo iniciar la app.");
   }
 }
+
+googleBtn.addEventListener("click", async () => {
+  try {
+    loginMessage.textContent = "Redirigiendo a Google...";
+    await Data.signInWithGoogle();
+  } catch (error) {
+    loginMessage.textContent = error.message || "No se pudo iniciar con Google.";
+  }
+});
 
 authTabs.addEventListener("click", event => {
   if (event.target.dataset.mode) setAuthMode(event.target.dataset.mode);
@@ -1945,8 +1963,8 @@ forgotLink.addEventListener("click", event => {
 
 loginForm.addEventListener("submit", async event => {
   event.preventDefault();
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
+  const email = $("loginEmail").value;
+  const password = $("loginPassword").value;
   loginBtn.disabled = true;
   loginMessage.textContent = "Entrando...";
   try {
@@ -1966,7 +1984,7 @@ loginForm.addEventListener("submit", async event => {
       history.replaceState(null, "", location.pathname);
       await enterApp();
     }
-    document.getElementById("loginPassword").value = "";
+    $("loginPassword").value = "";
   } catch (error) {
     loginMessage.textContent = error.message || "No se pudo completar la acción.";
   } finally {

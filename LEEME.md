@@ -1,10 +1,12 @@
 # Monetra (web)
 
+La guía paso a paso completa está en **GUIA-INSTALACION.md**.
+
 Aplicación web de finanzas personales con base de datos en la nube (Supabase). Se publica con GitHub Pages.
 
 ## Estructura
 - `www/` : la página (landing en index.html, la app en app.html)
-- `supabase/` : scripts SQL (setup.sql, hogar.sql, o instalar-todo.sql para una instalación nueva)
+- `supabase/` : scripts SQL (instalar-todo.sql = instalación nueva; actualizar-idiomas.sql = actualizar una instalación existente a v3)
 - `.github/workflows/pages.yml` : publica `www/` en GitHub Pages en cada push a main
 
 ## Configuración (una sola vez)

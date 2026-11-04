@@ -97,6 +97,14 @@
     return res.data.session ? "session" : "confirm";
   }
 
+  async function signInWithGoogle() {
+    const res = await client.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: location.origin + location.pathname, queryParams: { prompt: "select_account" } }
+    });
+    if (res.error) throw friendly(res.error);
+  }
+
   async function resetPassword(email) {
     const res = await client.auth.resetPasswordForEmail(email.trim(), { redirectTo: location.origin + location.pathname });
     if (res.error) throw friendly(res.error);
@@ -276,6 +284,7 @@
     signIn,
     signOut,
     signUp,
+    signInWithGoogle,
     resetPassword,
     updatePassword,
     onAuth,

@@ -40,20 +40,30 @@ create policy "own_categories" on public.categories
 create policy "own_transactions" on public.transactions
   for all to authenticated using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
 
+-- Categorías iniciales según el idioma (es / en / fr)
+create or replace function public.seed_categories(p_user uuid, p_household uuid, p_lang text)
+returns void language plpgsql security definer set search_path = public as $$
+declare n text[];
+begin
+  n := case
+    when coalesce(p_lang, 'es') ~* '^en' then array['Salary','Extra income','Rent','Internet','Phone','Food','Gas','Health']
+    when coalesce(p_lang, 'es') ~* '^fr' then array['Salaire','Revenu extra','Loyer','Internet','Téléphone','Alimentation','Essence','Santé']
+    else array['Salario','Ingreso extra','Renta','Internet','Celular','Comida','Gasolina','Salud']
+  end;
+  insert into public.categories (user_id, household_id, name, kind) values
+    (p_user, p_household, n[1], 'income'),  (p_user, p_household, n[2], 'income'),
+    (p_user, p_household, n[3], 'fixed'),   (p_user, p_household, n[4], 'fixed'),   (p_user, p_household, n[5], 'fixed'),
+    (p_user, p_household, n[6], 'variable'),(p_user, p_household, n[7], 'variable'),(p_user, p_household, n[8], 'variable')
+  on conflict do nothing;
+end $$;
+revoke all on function public.seed_categories(uuid, uuid, text) from public, anon, authenticated;
+
 -- Categorías iniciales para cada usuario nuevo (en su idioma de registro)
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
-declare en boolean := coalesce(new.raw_user_meta_data->>'lang', 'es') = 'en';
 begin
-  insert into public.categories (user_id, name, kind) values
-    (new.id, case when en then 'Salary' else 'Salario' end, 'income'),
-    (new.id, case when en then 'Extra income' else 'Ingreso extra' end, 'income'),
-    (new.id, case when en then 'Rent' else 'Renta' end, 'fixed'),
-    (new.id, 'Internet', 'fixed'),
-    (new.id, case when en then 'Phone' else 'Celular' end, 'fixed'),
-    (new.id, case when en then 'Food' else 'Comida' end, 'variable'),
-    (new.id, case when en then 'Gas' else 'Gasolina' end, 'variable'),
-    (new.id, case when en then 'Health' else 'Salud' end, 'variable');
+  perform public.seed_categories(new.id, null,
+    coalesce(new.raw_user_meta_data->>'lang', new.raw_user_meta_data->>'locale', 'es'));
   return new;
 end $$;
 drop trigger if exists on_auth_user_created on auth.users;

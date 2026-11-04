@@ -53,21 +53,13 @@ create policy "scoped_transactions" on public.transactions for all to authentica
 -- Crear un hogar (queda como único miembro, con categorías iniciales propias)
 create or replace function public.create_household(p_name text, p_lang text default 'es')
 returns uuid language plpgsql security definer set search_path = public as $$
-declare h uuid; uid uuid := auth.uid(); en boolean := p_lang = 'en';
+declare h uuid; uid uuid := auth.uid();
 begin
   if uid is null then raise exception 'not_authenticated'; end if;
   if exists (select 1 from household_members where user_id = uid) then raise exception 'already_in_household'; end if;
   insert into households (name, owner_id) values (coalesce(nullif(trim(p_name), ''), 'Hogar'), uid) returning id into h;
   insert into household_members (household_id, user_id) values (h, uid);
-  insert into categories (user_id, household_id, name, kind) values
-    (uid, h, case when en then 'Salary' else 'Salario' end, 'income'),
-    (uid, h, case when en then 'Extra income' else 'Ingreso extra' end, 'income'),
-    (uid, h, case when en then 'Rent' else 'Renta' end, 'fixed'),
-    (uid, h, 'Internet', 'fixed'),
-    (uid, h, case when en then 'Phone' else 'Celular' end, 'fixed'),
-    (uid, h, case when en then 'Food' else 'Comida' end, 'variable'),
-    (uid, h, case when en then 'Gas' else 'Gasolina' end, 'variable'),
-    (uid, h, case when en then 'Health' else 'Salud' end, 'variable');
+  perform public.seed_categories(uid, h, p_lang);
   return h;
 end $$;
 
