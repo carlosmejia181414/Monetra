@@ -1,3 +1,4 @@
+const withTimeout = (promise, label, ms = 15000) => Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(new Error(label + ": tiempo agotado. Revisa tu conexión e inténtalo de nuevo.")), ms))]);
 const $ = id => document.getElementById(id) || document.createElement("div"); // tolerante si el HTML en caché es antiguo
 
 const pageTitle = document.getElementById("pageTitle");
@@ -1898,8 +1899,9 @@ function scheduleRemoteRefresh() {
 
 async function enterApp() {
   try {
-    await refreshHouseholdUI();
-    await refreshData();
+    loginMessage.textContent = "Cargando tus datos...";
+    await withTimeout(refreshHouseholdUI(), "Hogar");
+    await withTimeout(refreshData(), "Datos");
     setupFilters();
     renderCategoryOptions();
     refreshDashboard();
@@ -1973,7 +1975,7 @@ loginForm.addEventListener("submit", async event => {
   loginMessage.textContent = "Entrando...";
   try {
     if (authMode === "login") {
-      await Data.signIn(email, password);
+      await withTimeout(Data.signIn(email, password), "Inicio de sesión");
       await enterApp();
     } else if (authMode === "signup") {
       const result = await Data.signUp(email, password, I18n.lang);

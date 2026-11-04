@@ -14,6 +14,7 @@
     "Guardar contraseña": "Save password",
     "Nueva contraseña": "New password",
     "Entrando...": "Signing in...",
+    "Cargando tus datos...": "Loading your data...",
     "Inicia sesión para ver tus finanzas.": "Log in to see your finances.",
     "Crea tu cuenta gratis.": "Create your free account.",
     "Escribe tu correo y te enviaremos un enlace.": "Enter your email and we'll send you a link.",
@@ -239,6 +240,7 @@
     "Guardar contraseña": "Enregistrer le mot de passe",
     "Nueva contraseña": "Nouveau mot de passe",
     "Entrando...": "Connexion...",
+    "Cargando tus datos...": "Chargement de vos données...",
     "Inicia sesión para ver tus finanzas.": "Connectez-vous pour voir vos finances.",
     "Crea tu cuenta gratis.": "Créez votre compte gratuit.",
     "Escribe tu correo y te enviaremos un enlace.": "Entrez votre courriel et nous vous enverrons un lien.",
@@ -464,6 +466,8 @@
   const T = s => (D && D[s]) || s;
   let busy = false;
 
+  let obs = null;
+
   function translateNode(n) {
     if (!D || !n || (n.nodeType !== 1 && n.nodeType !== 9 && n.nodeType !== 11)) return;
     busy = true;
@@ -471,11 +475,17 @@
     let x;
     while ((x = w.nextNode())) {
       const k = x.nodeValue.trim();
-      if (k && D[k]) x.nodeValue = x.nodeValue.replace(k, D[k]);
+      if (!k || !D[k] || D[k] === k) continue;           // sin traducción, o idéntica: no se toca el nodo
+      const nv = x.nodeValue.replace(k, D[k]);
+      if (nv !== x.nodeValue) x.nodeValue = nv;
     }
     (n.querySelectorAll ? n.querySelectorAll("[placeholder],[title]") : []).forEach(e => {
-      ["placeholder", "title"].forEach(a => { const v = e.getAttribute(a); if (v && D[v]) e.setAttribute(a, D[v]); });
+      ["placeholder", "title"].forEach(a => {
+        const v = e.getAttribute(a);
+        if (v && D[v] && D[v] !== v) e.setAttribute(a, D[v]);
+      });
     });
+    if (obs) obs.takeRecords();                           // descarta los cambios propios: evita bucles con el observador
     busy = false;
   }
 
@@ -505,9 +515,10 @@
     });
     if (lang !== "es") document.querySelectorAll("[data-" + lang + "]").forEach(e => { e.textContent = e.getAttribute("data-" + lang); });
     translateNode(document.body);
-    if (D) new MutationObserver(ms => {
+    if (D) obs = new MutationObserver(ms => {
       if (busy) return;
       ms.forEach(m => { m.addedNodes.forEach(a => translateNode(a.nodeType === 3 ? a.parentNode : a)); if (m.type === "characterData") translateNode(m.target.parentNode); });
-    }).observe(document.body, { childList: true, subtree: true, characterData: true });
+    });
+    if (obs) obs.observe(document.body, { childList: true, subtree: true, characterData: true });
   });
 })();
