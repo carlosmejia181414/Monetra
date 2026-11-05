@@ -11,7 +11,9 @@ monetra/
 │  ├─ app.html               La aplicación (login, registro y finanzas)
 │  ├─ app.js                 Lógica de la aplicación
 │  ├─ data.js                Conexión con la base de datos (Supabase)
-│  ├─ i18n.js                Español / English
+│  ├─ i18n.js                Español / English / Français
+│  ├─ theme.css              Diseño futurista del panel
+│  ├─ profile.js             Perfil: nombre, foto y menú de cuenta
 │  ├─ styles.css, logo.png, logo.svg (copia de respaldo), favicon.png, manifest.webmanifest, sw.js
 │  ├─ flags/                 Banderas es.svg, en.svg, fr.svg (selector de idioma)
 │  ├─ icons/                 Íconos de la app
@@ -21,6 +23,7 @@ monetra/
 │  ├─ instalar-todo.sql      INSTALACIÓN NUEVA (tablas, seguridad y modo hogar)
 │  ├─ setup.sql              Solo la parte de cuentas individuales
 │  ├─ hogar.sql              Solo el modo hogar (si ya tenías setup.sql)
+│  ├─ perfil.sql             PERFIL: tabla de perfiles + almacenamiento de fotos (v4)
 │  └─ actualizar-idiomas.sql ACTUALIZACIÓN v3 (agrega francés a las categorías iniciales)
 ├─ .github/workflows/pages.yml   Publica www/ en GitHub Pages automáticamente
 ├─ package.json, .gitignore, LEEME.md, GUIA-INSTALACION.md
@@ -134,6 +137,14 @@ Si ya tenías una cuenta con ese mismo correo, Supabase vincula ambas formas de 
 | Google dice "Acceso bloqueado / app no verificada" | La pantalla de consentimiento está en "Prueba": agrégate como usuario de prueba o pásala a producción. |
 | Vuelve a la página pero sin sesión | Revisa Site URL y Redirect URLs en Supabase (Parte 3, paso 7). |
 | Nunca pongas el Client Secret de Google en el repositorio | Solo va en Supabase. |
+
+## ACTUALIZAR a la v4 (panel futurista + perfil con nombre y foto)
+1. **Base de datos:** Supabase > SQL Editor > New query > pega TODO `supabase/perfil.sql` > Run. No borra datos y se puede ejecutar más de una vez. Crea la tabla `profiles` y el almacenamiento `avatars` (fotos de máx. 2 MB; cada usuario solo puede cambiar la suya). Sin este paso la app funciona igual, pero no podrás guardar nombre ni foto.
+2. **Archivos:** copia el contenido del ZIP dentro de tu carpeta clonada, aceptando reemplazar (no borres tu `www/config.js`).
+3. **Subir:** `git add .` > `git commit -m "Monetra v4: panel futurista y perfil"` > `git push origin main`.
+4. **Esperar el ✅ de Actions** y abrir la app con Ctrl + Shift + R.
+5. **Probar el perfil:** clic en tu nombre (arriba a la derecha) > **Mi perfil** > **Cambiar foto** y **Guardar perfil**. Las cuentas de Google ya muestran su nombre y foto de Google por defecto.
+6. Si al subir la foto aparece "Falta ejecutar supabase/perfil.sql", repite el paso 1.
 
 ## ACTUALIZAR de la versión anterior a la v3 (3 idiomas, banderas, logo y login)
 1. **Base de datos (1 minuto):** Supabase > SQL Editor > New query > pega TODO `supabase/actualizar-idiomas.sql` > Run. No borra datos. (Solo cambia las categorías iniciales de cuentas y hogares nuevos para incluir francés.)

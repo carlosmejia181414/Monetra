@@ -1,4 +1,33 @@
 const withTimeout = (promise, label, ms = 15000) => Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(new Error(label + ": tiempo agotado. Revisa tu conexión e inténtalo de nuevo.")), ms))]);
+// Tema de gráficos: colores de la paleta Monetra sobre fondo oscuro
+(function themeCharts() {
+  if (!window.Chart || !Chart.defaults || typeof Chart.register !== "function") return;
+  const PALETTE = ["#e8456b", "#ff7a5c", "#ffcf4a", "#b0236b", "#8a5cd0", "#ffb25a", "#ff9db3", "#d9b8ff"];
+  Chart.defaults.color = "#cdb8da";
+  Chart.defaults.borderColor = "rgba(255,255,255,.09)";
+  Chart.defaults.font.family = "Outfit, system-ui, sans-serif";
+  if (Chart.defaults.plugins && Chart.defaults.plugins.colors) Chart.defaults.plugins.colors.enabled = false;
+  Chart.register({
+    id: "monetraPalette",
+    beforeUpdate(chart) {
+      chart.data.datasets.forEach((ds, i) => {
+        if (ds._themed) return;
+        ds._themed = true;
+        const t = ds.type || chart.config.type, c = PALETTE[i % PALETTE.length];
+        if (t === "pie" || t === "doughnut" || t === "polarArea") {
+          if (!ds.backgroundColor) ds.backgroundColor = (ds.data || []).map((_, k) => PALETTE[k % PALETTE.length]);
+          if (!ds.borderColor) ds.borderColor = "#1b0d2b";
+        } else if (t === "line") {
+          if (!ds.borderColor) ds.borderColor = c;
+          if (!ds.backgroundColor) ds.backgroundColor = c + "33";
+        } else {
+          if (!ds.backgroundColor) ds.backgroundColor = c;
+          if (!ds.borderColor) ds.borderColor = c;
+        }
+      });
+    }
+  });
+})();
 const $ = id => document.getElementById(id) || document.createElement("div"); // tolerante si el HTML en caché es antiguo
 
 const pageTitle = document.getElementById("pageTitle");
@@ -1659,7 +1688,8 @@ function showSection(sectionId) {
     categoriesSection: "Categorías",
     chartsSection: "Gráficos",
     analyticsSection: "Data analytics",
-    householdSection: "Hogar"
+    householdSection: "Hogar",
+    profileSection: "Mi perfil"
   };
 
   pageTitle.textContent = titles[sectionId] || "Monetra";
@@ -1907,6 +1937,7 @@ async function enterApp() {
     refreshDashboard();
     hideLogin();
     Data.subscribe(scheduleRemoteRefresh);
+    document.dispatchEvent(new CustomEvent("monetra:ready"));
   } catch (error) {
     console.error(error);
     showLogin(error.message || "No se pudo conectar con la base de datos.");
@@ -2002,6 +2033,7 @@ logoutBtn.addEventListener("click", async () => {
   await Data.signOut();
   transactionsCache = [];
   categoriesCache = [];
+  document.dispatchEvent(new CustomEvent("monetra:logout"));
   showLogin("Sesión cerrada.");
 });
 

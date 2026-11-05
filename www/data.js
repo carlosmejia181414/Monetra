@@ -27,6 +27,9 @@
     if (error.code === "42501" || /row-level security/i.test(msg)) {
       return new Error("Tu cuenta no tiene permiso para guardar datos. ");
     }
+    if (/bucket not found/i.test(msg) || (error.code === "PGRST205" && /profiles/.test(msg))) {
+      return new Error("Falta ejecutar supabase/perfil.sql en el SQL Editor de Supabase.");
+    }
     if (/household_id|households|household_members/.test(msg) || error.code === "42703" || error.code === "42P01" || error.code === "PGRST205") {
       return new Error("La base de datos no está actualizada: ejecuta supabase/hogar.sql en el SQL Editor de Supabase.");
     }
@@ -278,7 +281,56 @@
     setScope("personal");
   }
 
+  // ---------- Perfil (nombre y foto) ----------
+  async function sessionUser() {
+    const s = await getSession();
+    if (!s) throw new Error("Sesión no válida. Vuelve a iniciar sesión.");
+    return s.user;
+  }
+
+  async function getProfile() {
+    const u = await sessionUser();
+    const m = u.user_metadata || {};
+    const base = {
+      id: u.id, email: u.email || "", name: m.full_name || m.name || "", avatarUrl: m.avatar_url || m.picture || "",
+      provider: (u.app_metadata && u.app_metadata.provider) || "email", ready: false
+    };
+    const res = await client.from("profiles").select("display_name,avatar_url").eq("user_id", u.id).maybeSingle();
+    if (res.error) return base; // perfil.sql aún no ejecutado: se usan los datos de la cuenta
+    base.ready = true;
+    if (res.data) {
+      if (res.data.display_name) base.name = res.data.display_name;
+      if (res.data.avatar_url) base.avatarUrl = res.data.avatar_url;
+    }
+    return base;
+  }
+
+  async function saveProfile(patch) {
+    const u = await sessionUser();
+    const row = { user_id: u.id, updated_at: new Date().toISOString() };
+    if ("displayName" in patch) row.display_name = String(patch.displayName || "").trim().slice(0, 60) || null;
+    if ("avatarUrl" in patch) row.avatar_url = patch.avatarUrl || null;
+    check(await client.from("profiles").upsert(row, { onConflict: "user_id" }), "No se pudo guardar el perfil");
+  }
+
+  async function uploadAvatar(blob) {
+    const u = await sessionUser();
+    const path = u.id + "/avatar.jpg";
+    const up = await client.storage.from("avatars").upload(path, blob, { upsert: true, contentType: "image/jpeg", cacheControl: "3600" });
+    if (up.error) throw friendly(up.error, "No se pudo subir la foto");
+    const url = client.storage.from("avatars").getPublicUrl(path).data.publicUrl + "?v=" + Date.now();
+    await saveProfile({ avatarUrl: url });
+    return url;
+  }
+
+  async function removeAvatar() {
+    const u = await sessionUser();
+    await client.storage.from("avatars").remove([u.id + "/avatar.jpg"]);
+    await saveProfile({ avatarUrl: null });
+  }
+
   window.Data = {
+    getProfile, saveProfile, uploadAvatar, removeAvatar,
     getHousehold, setScope, getScope, createHousehold, joinHousehold, leaveHousehold,
     isConfigured,
     getSession,

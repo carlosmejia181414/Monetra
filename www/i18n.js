@@ -225,7 +225,29 @@
     "Reducción sugerida para acercarte a una meta de ahorro del 20%.": "Suggested reduction to get closer to a 20% savings target.",
     "Gasto actual": "Current spending",
     "Reducción sugerida": "Suggested reduction",
-    "Nuevo objetivo": "New target"
+    "Nuevo objetivo": "New target",
+    "Mi perfil": "My profile",
+    "Perfil": "Profile",
+    "Cambiar foto": "Change photo",
+    "Quitar foto": "Remove photo",
+    "Personaliza tu cuenta": "Personalize your account",
+    "Nombre para mostrar": "Display name",
+    "Tu nombre": "Your name",
+    "Correo de la cuenta": "Account email",
+    "Cuenta": "Account",
+    "Idioma": "Language",
+    "Guardar perfil": "Save profile",
+    "Cuenta de Google": "Google account",
+    "Cuenta con correo y contraseña": "Email and password account",
+    "Perfil guardado.": "Profile saved.",
+    "Foto actualizada.": "Photo updated.",
+    "Foto eliminada.": "Photo removed.",
+    "Subiendo foto...": "Uploading photo...",
+    "Elige una imagen JPG, PNG o WebP de hasta 10 MB.": "Choose a JPG, PNG or WebP image up to 10 MB.",
+    "Para guardar tu nombre y foto ejecuta supabase/perfil.sql en Supabase.": "To save your name and photo, run supabase/perfil.sql in Supabase.",
+    "Falta ejecutar supabase/perfil.sql en el SQL Editor de Supabase.": "Run supabase/perfil.sql in the Supabase SQL Editor first.",
+    "Tu foto se ve en el menú y en tu perfil. Se guarda recortada en formato cuadrado.": "Your photo appears in the menu and on your profile. It is saved cropped to a square.",
+    "Data analytics": "Data analytics"
   },
     fr: {
     "Iniciar sesión": "Se connecter",
@@ -451,7 +473,29 @@
     "Reducción sugerida para acercarte a una meta de ahorro del 20%.": "Réduction suggérée pour vous rapprocher d'un objectif d'épargne de 20 %.",
     "Gasto actual": "Dépenses actuelles",
     "Reducción sugerida": "Réduction suggérée",
-    "Nuevo objetivo": "Nouvel objectif"
+    "Nuevo objetivo": "Nouvel objectif",
+    "Mi perfil": "Mon profil",
+    "Perfil": "Profil",
+    "Cambiar foto": "Changer la photo",
+    "Quitar foto": "Retirer la photo",
+    "Personaliza tu cuenta": "Personnalisez votre compte",
+    "Nombre para mostrar": "Nom affiché",
+    "Tu nombre": "Votre nom",
+    "Correo de la cuenta": "Courriel du compte",
+    "Cuenta": "Compte",
+    "Idioma": "Langue",
+    "Guardar perfil": "Enregistrer le profil",
+    "Cuenta de Google": "Compte Google",
+    "Cuenta con correo y contraseña": "Compte courriel et mot de passe",
+    "Perfil guardado.": "Profil enregistré.",
+    "Foto actualizada.": "Photo mise à jour.",
+    "Foto eliminada.": "Photo retirée.",
+    "Subiendo foto...": "Téléversement de la photo...",
+    "Elige una imagen JPG, PNG o WebP de hasta 10 MB.": "Choisissez une image JPG, PNG ou WebP de 10 Mo maximum.",
+    "Para guardar tu nombre y foto ejecuta supabase/perfil.sql en Supabase.": "Pour enregistrer votre nom et votre photo, exécutez supabase/perfil.sql dans Supabase.",
+    "Falta ejecutar supabase/perfil.sql en el SQL Editor de Supabase.": "Exécutez d'abord supabase/perfil.sql dans le SQL Editor de Supabase.",
+    "Tu foto se ve en el menú y en tu perfil. Se guarda recortada en formato cuadrado.": "Votre photo s'affiche dans le menu et sur votre profil. Elle est enregistrée recadrée en carré.",
+    "Data analytics": "Analyse de données"
   }
   };
   const LANGS = ["es", "en", "fr"];
@@ -498,7 +542,7 @@
   window.T = T;
   window.I18n = { lang, T, setLang, LANGS };
 
-  document.addEventListener("DOMContentLoaded", () => {
+  function boot() {
     // Selector de idioma con banderas (sin texto)
     document.querySelectorAll("[data-lang-switch]").forEach(box => {
       box.innerHTML = "";
@@ -520,5 +564,6 @@
       ms.forEach(m => { m.addedNodes.forEach(a => translateNode(a.nodeType === 3 ? a.parentNode : a)); if (m.type === "characterData") translateNode(m.target.parentNode); });
     });
     if (obs) obs.observe(document.body, { childList: true, subtree: true, characterData: true });
-  });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();
