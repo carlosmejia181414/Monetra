@@ -267,6 +267,29 @@
     return { ...res.data, members: cnt.count || 1 };
   }
 
+  // ---------- Asesor IA y administrador ----------
+  async function askAdvisor(payload) {
+    const res = await client.functions.invoke("ai-advisor", { body: payload });
+    if (res.error) {
+      let msg = res.error.message || "";
+      try { const j = await res.error.context.json(); if (j && j.error) msg = j.error; } catch (e) {}
+      if (/not found|404|failed to send/i.test(msg)) msg = "La función ai-advisor aún no está publicada en Supabase (ver GUIA-INSTALACION.md, paso del asesor IA).";
+      throw new Error(msg || "No se pudo consultar a la IA.");
+    }
+    if (res.data && res.data.error) throw new Error(res.data.error);
+    return res.data;
+  }
+
+  async function isAdmin() {
+    const u = await sessionUser();
+    const r = await client.from("admins").select("user_id").eq("user_id", u.id).maybeSingle();
+    return !r.error && !!r.data;
+  }
+
+  async function adminStats(days) {
+    return check(await client.rpc("admin_stats", { p_days: days || 30 }), "No se pudieron cargar las estadísticas");
+  }
+
   const setScope = s => { scope = s; localStorage.setItem("mb_scope", s); };
   const getScope = () => scope;
 
@@ -330,7 +353,7 @@
   }
 
   window.Data = {
-    getProfile, saveProfile, uploadAvatar, removeAvatar,
+    getProfile, saveProfile, uploadAvatar, removeAvatar, askAdvisor, isAdmin, adminStats,
     getHousehold, setScope, getScope, createHousehold, joinHousehold, leaveHousehold,
     isConfigured,
     getSession,

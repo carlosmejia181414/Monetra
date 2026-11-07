@@ -3,8 +3,7 @@ const withTimeout = (promise, label, ms = 15000) => Promise.race([promise, new P
 (function themeCharts() {
   if (!window.Chart || !Chart.defaults || typeof Chart.register !== "function") return;
   const PALETTE = ["#e8456b", "#ff7a5c", "#ffcf4a", "#b0236b", "#8a5cd0", "#ffb25a", "#ff9db3", "#d9b8ff"];
-  Chart.defaults.color = "#cdb8da";
-  Chart.defaults.borderColor = "rgba(255,255,255,.09)";
+  if (window.MonetraTheme) MonetraTheme.applyChart(); else { Chart.defaults.color = "#cdb8da"; Chart.defaults.borderColor = "rgba(255,255,255,.09)"; }
   Chart.defaults.font.family = "Outfit, system-ui, sans-serif";
   if (Chart.defaults.plugins && Chart.defaults.plugins.colors) Chart.defaults.plugins.colors.enabled = false;
   Chart.register({
@@ -16,7 +15,6 @@ const withTimeout = (promise, label, ms = 15000) => Promise.race([promise, new P
         const t = ds.type || chart.config.type, c = PALETTE[i % PALETTE.length];
         if (t === "pie" || t === "doughnut" || t === "polarArea") {
           if (!ds.backgroundColor) ds.backgroundColor = (ds.data || []).map((_, k) => PALETTE[k % PALETTE.length]);
-          if (!ds.borderColor) ds.borderColor = "#1b0d2b";
         } else if (t === "line") {
           if (!ds.borderColor) ds.borderColor = c;
           if (!ds.backgroundColor) ds.backgroundColor = c + "33";
@@ -31,7 +29,7 @@ const withTimeout = (promise, label, ms = 15000) => Promise.race([promise, new P
 const $ = id => document.getElementById(id) || document.createElement("div"); // tolerante si el HTML en caché es antiguo
 
 const pageTitle = document.getElementById("pageTitle");
-const navButtons = document.querySelectorAll(".nav-btn");
+const navButtons = document.querySelectorAll(".nav-btn[data-section]");
 const sections = document.querySelectorAll(".page-section");
 
 const form = document.getElementById("transactionForm");
@@ -1688,6 +1686,7 @@ function showSection(sectionId) {
     categoriesSection: "Categorías",
     chartsSection: "Gráficos",
     analyticsSection: "Data analytics",
+    advisorSection: "Asesor financiero IA",
     householdSection: "Hogar",
     profileSection: "Mi perfil"
   };
@@ -1926,6 +1925,11 @@ function scheduleRemoteRefresh() {
     }
   }, 400);
 }
+
+// Al cambiar de modo claro/oscuro se vuelven a dibujar los gráficos con los colores nuevos
+document.addEventListener("monetra:theme", () => {
+  try { if (typeof transactionsCache !== "undefined" && transactionsCache.length >= 0 && document.body && !document.body.classList.contains("locked")) { refreshDashboard(); renderAllProCharts(); renderAnalytics(); } } catch (e) { console.warn(e); }
+});
 
 async function enterApp() {
   try {

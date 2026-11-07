@@ -3,6 +3,8 @@
 Monetra es una página web de finanzas personales. Los datos se guardan en una base de datos en la nube (Supabase) y la página se publica gratis con GitHub Pages.
 
 ## Archivos del proyecto
+(v5 añade: theme.js, advisor.js, admin.html/admin.js, track.js, docs/*.pdf, supabase/ia.sql, supabase/admin.sql, supabase/functions/ai-advisor)
+
 ```
 monetra/
 ├─ www/                      <- la página web (esto es lo que se publica)
@@ -137,6 +139,9 @@ Si ya tenías una cuenta con ese mismo correo, Supabase vincula ambas formas de 
 | Google dice "Acceso bloqueado / app no verificada" | La pantalla de consentimiento está en "Prueba": agrégate como usuario de prueba o pásala a producción. |
 | Vuelve a la página pero sin sesión | Revisa Site URL y Redirect URLs en Supabase (Parte 3, paso 7). |
 | Nunca pongas el Client Secret de Google en el repositorio | Solo va en Supabase. |
+
+## ACTUALIZAR a la v5 (modo claro/oscuro, Asesor IA, Administrador, PDFs)
+Ver el archivo **ACTUALIZAR-V5.md** (pasos completos). Resumen: copia los archivos, ejecuta `supabase/ia.sql` y `supabase/admin.sql` (con tu correo), publica la función `ai-advisor` con el secreto `ANTHROPIC_API_KEY`, y haz `git push`.
 
 ## ACTUALIZAR a la v4 (panel futurista + perfil con nombre y foto)
 1. **Base de datos:** Supabase > SQL Editor > New query > pega TODO `supabase/perfil.sql` > Run. No borra datos y se puede ejecutar más de una vez. Crea la tabla `profiles` y el almacenamiento `avatars` (fotos de máx. 2 MB; cada usuario solo puede cambiar la suya). Sin este paso la app funciona igual, pero no podrás guardar nombre ni foto.

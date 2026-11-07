@@ -154,3 +154,11 @@
   document.addEventListener("monetra:ready", load);
   document.addEventListener("monetra:logout", () => { profile = null; toggleMenu(false); });
 })();
+
+// Muestra el acceso al panel de administrador solo si la cuenta es administradora.
+document.addEventListener("monetra:ready", async () => {
+  const link = document.getElementById("adminLink");
+  if (!link) return;
+  try { link.classList.toggle("hidden", !(await Data.isAdmin())); } catch (e) { link.classList.add("hidden"); }
+});
+document.addEventListener("monetra:logout", () => { const l = document.getElementById("adminLink"); if (l) l.classList.add("hidden"); });
