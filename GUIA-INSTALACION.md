@@ -140,6 +140,9 @@ Si ya tenías una cuenta con ese mismo correo, Supabase vincula ambas formas de 
 | Vuelve a la página pero sin sesión | Revisa Site URL y Redirect URLs en Supabase (Parte 3, paso 7). |
 | Nunca pongas el Client Secret de Google en el repositorio | Solo va en Supabase. |
 
+## ACTUALIZAR a la v6 (paleta nueva + Administrador avanzado)
+Ver el archivo **ACTUALIZAR-V6.md**. Resumen: copia los archivos, vuelve a ejecutar `supabase/admin.sql` (con tu correo en la última línea) y haz `git push`.
+
 ## ACTUALIZAR a la v5 (modo claro/oscuro, Asesor IA, Administrador, PDFs)
 Ver el archivo **ACTUALIZAR-V5.md** (pasos completos). Resumen: copia los archivos, ejecuta `supabase/ia.sql` y `supabase/admin.sql` (con tu correo), publica la función `ai-advisor` con el secreto `ANTHROPIC_API_KEY`, y haz `git push`.
 

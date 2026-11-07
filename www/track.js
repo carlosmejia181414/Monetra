@@ -29,8 +29,14 @@
   if (/admin\.html$/.test(location.pathname)) return; // no cuenta las visitas al panel
   send("page_view");
   document.addEventListener("click", function (e) {
-    var el = e.target.closest && e.target.closest("[data-track]");
+    var tg = e.target.closest ? e.target : null; if (!tg) return;
+    var el = tg.closest("[data-track]");
     if (el) send(el.getAttribute("data-track"));
+    var tab = tg.closest(".nav-btn[data-section]");
+    if (tab) send("tab_" + tab.getAttribute("data-section").replace("Section", "").toLowerCase());
+    if (tg.closest("#exportBtn")) send("export_data");
+    if (tg.closest("#importBtn")) send("import_data");
+    if (tg.closest("[data-theme-toggle]")) send("theme_toggle");
   });
   document.addEventListener("monetra:ready", function () { send("app_open"); });
 })();

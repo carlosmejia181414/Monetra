@@ -286,8 +286,11 @@
     return !r.error && !!r.data;
   }
 
-  async function adminStats(days) {
-    return check(await client.rpc("admin_stats", { p_days: days || 30 }), "No se pudieron cargar las estadísticas");
+  async function adminStats(from, to, tz) {
+    return check(await client.rpc("admin_stats", { p_from: from, p_to: to, p_tz: tz || "UTC" }), "No se pudieron cargar las estadísticas");
+  }
+  async function adminUsers(limit, offset, search) {
+    return check(await client.rpc("admin_users", { p_limit: limit || 25, p_offset: offset || 0, p_search: search || "" }), "No se pudo cargar la lista de usuarios");
   }
 
   const setScope = s => { scope = s; localStorage.setItem("mb_scope", s); };
@@ -353,7 +356,7 @@
   }
 
   window.Data = {
-    getProfile, saveProfile, uploadAvatar, removeAvatar, askAdvisor, isAdmin, adminStats,
+    getProfile, saveProfile, uploadAvatar, removeAvatar, askAdvisor, isAdmin, adminStats, adminUsers,
     getHousehold, setScope, getScope, createHousehold, joinHousehold, leaveHousehold,
     isConfigured,
     getSession,

@@ -1,6 +1,6 @@
 # Monetra (web)
 
-La guía paso a paso completa está en **GUIA-INSTALACION.md**. Para actualizar a la v5 (modo claro/oscuro, Asesor IA, Administrador, PDFs) lee **ACTUALIZAR-V5.md**.
+La guía paso a paso completa está en **GUIA-INSTALACION.md**. Para actualizar a la v5 (modo claro/oscuro, Asesor IA, Administrador, PDFs) lee **ACTUALIZAR-V5.md**. Para la v6 (paleta nueva y Administrador avanzado) lee **ACTUALIZAR-V6.md**.
 
 Aplicación web de finanzas personales con base de datos en la nube (Supabase). Se publica con GitHub Pages.
 

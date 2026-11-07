@@ -15,12 +15,12 @@
     if (!window.Chart || !Chart.defaults) return;
     Chart.defaults.color = css("--chart-text", "#cdb8da");
     Chart.defaults.borderColor = css("--chart-grid", "rgba(255,255,255,.09)");
-    if (Chart.defaults.elements && Chart.defaults.elements.arc) Chart.defaults.elements.arc.borderColor = css("--chart-sep", "#1b0d2b");
+    if (Chart.defaults.elements && Chart.defaults.elements.arc) Chart.defaults.elements.arc.borderColor = css("--chart-sep", "#1e1b25");
   }
   function set(theme, persist) {
     document.documentElement.setAttribute("data-theme", theme);
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", theme === "light" ? "#f6eef4" : "#160a25");
+    if (meta) meta.setAttribute("content", theme === "light" ? "#fff4f0" : "#111014");
     if (persist) { try { localStorage.setItem(KEY, theme); } catch (e) {} }
     applyChart();
     document.querySelectorAll("[data-theme-toggle]").forEach(function (b) {
