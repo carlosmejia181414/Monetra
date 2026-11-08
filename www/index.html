@@ -58,7 +58,7 @@
 </head>
 <body>
   <header class="nav"><div class="wrap">
-    <a class="logo" href="#top"><img src="logo.png?v=9" alt="" />Monetra</a>
+    <a class="logo" href="#top"><img src="logo.png?v=11" alt="" />Monetra</a>
     <nav class="links"><a href="#features">Funciones</a><a href="#how">Cómo funciona</a><a href="#ai">Asesor IA</a><a href="#home">Hogar</a><a href="#downloads">Descargas</a><a href="#faq">Preguntas</a></nav>
     <div class="lang-switch" data-lang-switch></div>
     <a href="app.html" data-track="click_login" class="btn line sm hide-xs">Iniciar sesión</a>
@@ -162,8 +162,8 @@
     <section id="downloads"><div class="wrap">
       <div class="center"><h2 data-en="Free guides to download" data-fr="Guides gratuits à télécharger">Guías gratuitas para descargar</h2><p class="sub" data-en="Learn what Monetra offers and how to get the most out of your dashboard." data-fr="Découvrez ce que Monetra offre et comment tirer le meilleur de votre tableau de bord.">Conoce lo que ofrece Monetra y cómo sacarle el máximo a tu panel.</p></div>
       <div class="grid3" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:30px">
-        <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/></svg></div><h3 data-en="Brochure: what is Monetra" data-fr="Brochure : qu'est-ce que Monetra">Brochure: qué es Monetra</h3><p data-en="A visual presentation of the app, its benefits and how it works." data-fr="Une présentation visuelle de l'application, de ses avantages et de son fonctionnement.">Presentación visual de la app, sus beneficios y cómo funciona.</p><a class="btn dark sm" style="margin-top:16px" href="docs/brochure-monetra.pdf" download data-track="download_brochure" data-en="Download PDF" data-fr="Télécharger le PDF">Descargar PDF</a></div>
-        <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20V3H6.5A2.5 2.5 0 004 5.5z"/><path d="M4 19.5V22h16"/></svg></div><h3 data-en="Dashboard user manual" data-fr="Manuel du tableau de bord">Manual del dashboard</h3><p data-en="Step-by-step guide with screenshots for every section of the app." data-fr="Guide pas à pas avec captures d'écran pour chaque section de l'application.">Guía paso a paso con imágenes de cada sección de la app.</p><a class="btn dark sm" style="margin-top:16px" href="docs/manual-dashboard.pdf" download data-track="download_manual" data-en="Download PDF" data-fr="Télécharger le PDF">Descargar PDF</a></div>
+        <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/></svg></div><h3 data-en="Brochure: what is Monetra" data-fr="Brochure : qu'est-ce que Monetra">Brochure: qué es Monetra</h3><p data-en="A visual presentation of the app, its benefits and how it works." data-fr="Une présentation visuelle de l'application, de ses avantages et de son fonctionnement.">Presentación visual de la app, sus beneficios y cómo funciona.</p><a class="btn dark sm" style="margin-top:16px" href="docs/brochure-monetra-es.pdf" data-doc="brochure-monetra" download data-track="download_brochure" data-en="Download PDF" data-fr="Télécharger le PDF">Descargar PDF</a></div>
+        <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20V3H6.5A2.5 2.5 0 004 5.5z"/><path d="M4 19.5V22h16"/></svg></div><h3 data-en="Dashboard user manual" data-fr="Manuel du tableau de bord">Manual del dashboard</h3><p data-en="Step-by-step guide with screenshots for every section of the app." data-fr="Guide pas à pas avec captures d'écran pour chaque section de l'application.">Guía paso a paso con imágenes de cada sección de la app.</p><a class="btn dark sm" style="margin-top:16px" href="docs/manual-dashboard-es.pdf" data-doc="manual-dashboard" download data-track="download_manual" data-en="Download PDF" data-fr="Télécharger le PDF">Descargar PDF</a></div>
       </div>
     </div></section>
 
@@ -179,15 +179,21 @@
   </main>
 
   <footer><div class="wrap">
-    <a class="logo" href="#top"><img src="logo.png?v=9" alt="" />Monetra</a>
+    <a class="logo" href="#top"><img src="logo.png?v=11" alt="" />Monetra</a>
     <span>© 2026 Monetra. Todos los derechos reservados.</span>
     <nav><a href="app.html">Iniciar sesión</a><a href="app.html#signup">Crear cuenta</a></nav>
   </div></footer>
 
-  <script src="i18n.js?v=9"></script>
-  <script src="config.js?v=9"></script>
-  <script src="track.js?v=9"></script>
+  <script src="i18n.js?v=11"></script>
+  <script src="config.js?v=11"></script>
+  <script src="track.js?v=11"></script>
   <script>
+    // Los PDFs se descargan en el idioma elegido (es / en / fr)
+    (function () {
+      var l = (window.I18n && I18n.lang) || "es";
+      if (l !== "en" && l !== "fr") l = "es";
+      document.querySelectorAll("a[data-doc]").forEach(function (a) { a.setAttribute("href", "docs/" + a.getAttribute("data-doc") + "-" + l + ".pdf"); });
+    })();
     // En la app instalada (APK o pantalla de inicio) se abre directo la app.
     const native = false;
     const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;

@@ -2044,7 +2044,7 @@ logoutBtn.addEventListener("click", async () => {
   transactionsCache = [];
   categoriesCache = [];
   document.dispatchEvent(new CustomEvent("monetra:logout"));
-  showLogin("Sesión cerrada.");
+  location.replace("index.html");
 });
 
 initApp();
