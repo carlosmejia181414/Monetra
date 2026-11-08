@@ -19,3 +19,5 @@ Aplicación web de finanzas personales con base de datos en la nube (Supabase). 
 
 ## Probar en tu computadora
 `npx serve www` y abre la dirección que muestre. No abras los .html con doble clic.
+
+> Última actualización: ver ACTUALIZAR-V7.md

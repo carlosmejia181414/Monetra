@@ -20,7 +20,7 @@
   function set(theme, persist) {
     document.documentElement.setAttribute("data-theme", theme);
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", theme === "light" ? "#fff4f0" : "#111014");
+    if (meta) meta.setAttribute("content", theme === "light" ? "#f5f6fa" : "#111014");
     if (persist) { try { localStorage.setItem(KEY, theme); } catch (e) {} }
     applyChart();
     document.querySelectorAll("[data-theme-toggle]").forEach(function (b) {

@@ -92,10 +92,10 @@
     await client.auth.signOut();
   }
 
-  async function signUp(email, password, lang) {
+  async function signUp(email, password, lang, name) {
     const res = await client.auth.signUp({
       email: email.trim(), password,
-      options: { data: { lang }, emailRedirectTo: location.origin + location.pathname }
+      options: { data: { lang, full_name: String(name || "").trim().slice(0, 60) }, emailRedirectTo: location.origin + location.pathname }
     });
     if (res.error) throw friendly(res.error);
     return res.data.session ? "session" : "confirm";

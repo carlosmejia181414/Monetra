@@ -2,7 +2,9 @@ const withTimeout = (promise, label, ms = 15000) => Promise.race([promise, new P
 // Tema de gráficos: colores de la paleta Monetra sobre fondo oscuro
 (function themeCharts() {
   if (!window.Chart || !Chart.defaults || typeof Chart.register !== "function") return;
-  const PALETTE = ["#e8456b", "#ff7a5c", "#ffcf4a", "#b0236b", "#8a5cd0", "#ffb25a", "#ff9db3", "#d9b8ff"];
+  const PAL_DARK = ["#e8456b", "#ff7a5c", "#ffcf4a", "#b0236b", "#8a5cd0", "#ffb25a", "#ff9db3", "#d9b8ff"];
+  const PAL_LIGHT = ["#6c1f7c", "#1f9d57", "#e0a21b", "#17408f", "#d92d4f", "#8f3da3", "#0d9488", "#c2410c"];
+  const pal = () => (document.documentElement.getAttribute("data-theme") === "light" ? PAL_LIGHT : PAL_DARK);
   if (window.MonetraTheme) MonetraTheme.applyChart(); else { Chart.defaults.color = "#cdb8da"; Chart.defaults.borderColor = "rgba(255,255,255,.09)"; }
   Chart.defaults.font.family = "Outfit, system-ui, sans-serif";
   if (Chart.defaults.plugins && Chart.defaults.plugins.colors) Chart.defaults.plugins.colors.enabled = false;
@@ -12,9 +14,9 @@ const withTimeout = (promise, label, ms = 15000) => Promise.race([promise, new P
       chart.data.datasets.forEach((ds, i) => {
         if (ds._themed) return;
         ds._themed = true;
-        const t = ds.type || chart.config.type, c = PALETTE[i % PALETTE.length];
+        const t = ds.type || chart.config.type, c = pal()[i % pal().length];
         if (t === "pie" || t === "doughnut" || t === "polarArea") {
-          if (!ds.backgroundColor) ds.backgroundColor = (ds.data || []).map((_, k) => PALETTE[k % PALETTE.length]);
+          if (!ds.backgroundColor) ds.backgroundColor = (ds.data || []).map((_, k) => pal()[k % pal().length]);
         } else if (t === "line") {
           if (!ds.borderColor) ds.borderColor = c;
           if (!ds.backgroundColor) ds.backgroundColor = c + "33";
@@ -1787,6 +1789,7 @@ const passRow = $("passRow");
 const forgotLink = $("forgotLink");
 const googleBtn = $("googleBtn");
 const orDivider = $("orDivider");
+const nameRow = $("nameRow");
 const authTabs = $("authTabs");
 const inInstalledApp = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
 if (inInstalledApp) $("loginBack").classList.add("hidden");
@@ -1794,10 +1797,6 @@ document.addEventListener("keydown", event => {
   if (event.key === "Escape" && !inInstalledApp && !loginOverlay.classList.contains("hidden")) location.href = "index.html";
 });
 let authMode = "login";
-// En la app instalada (APK o pantalla de inicio) no hay página de presentación a la que volver.
-if (matchMedia("(display-mode: standalone)").matches || navigator.standalone) {
-  document.getElementById("backLink").classList.add("hidden");
-}
 let recovering = location.hash.includes("type=recovery");
 
 const AUTH_TEXT = {
@@ -1811,6 +1810,8 @@ function setAuthMode(mode, message) {
   authMode = mode;
   loginMessage.textContent = message || AUTH_TEXT[mode][0];
   loginBtn.textContent = AUTH_TEXT[mode][1];
+  nameRow.classList.toggle("hidden", mode !== "signup");
+  $("loginName").required = mode === "signup";
   emailRow.classList.toggle("hidden", mode === "reset");
   passRow.classList.toggle("hidden", mode === "forgot");
   forgotLink.classList.toggle("hidden", mode !== "login");
@@ -2013,9 +2014,9 @@ loginForm.addEventListener("submit", async event => {
       await withTimeout(Data.signIn(email, password), "Inicio de sesión");
       await enterApp();
     } else if (authMode === "signup") {
-      const result = await Data.signUp(email, password, I18n.lang);
+      const result = await Data.signUp(email, password, I18n.lang, $("loginName").value);
       if (result === "session") await enterApp();
-      else setAuthMode("login", "Cuenta creada. Revisa tu correo para confirmarla.");
+      else { loginForm.classList.add("done"); $("signupOk").classList.remove("hidden"); loginMessage.textContent = ""; }
     } else if (authMode === "forgot") {
       await Data.resetPassword(email);
       setAuthMode("login", "Te enviamos un enlace para cambiar tu contraseña.");
@@ -2031,6 +2032,11 @@ loginForm.addEventListener("submit", async event => {
   } finally {
     loginBtn.disabled = false;
   }
+});
+
+$("signupOkBtn").addEventListener("click", () => {
+  loginForm.classList.remove("done"); $("signupOk").classList.add("hidden"); $("loginPassword").value = ""; $("loginName").value = "";
+  setAuthMode("login", "Ahora inicia sesión con tu correo y contraseña.");
 });
 
 logoutBtn.addEventListener("click", async () => {

@@ -2,6 +2,11 @@
 (function () {
   const DICT = {
     en: {
+    "Nombre": "Name",
+    "¡Registro exitoso!": "Registration successful!",
+    "Tu cuenta fue creada. Te enviamos un correo para confirmarla (revisa también la carpeta de spam). Después de confirmarla, inicia sesión para usar Monetra.": "Your account was created. We sent you an email to confirm it (check your spam folder too). After confirming it, log in to use Monetra.",
+    "Ir a iniciar sesión": "Go to log in",
+    "Ahora inicia sesión con tu correo y contraseña.": "Now log in with your email and password.",
     "Asesor IA": "AI advisor",
     "Administrador": "Administrator",
     "Asesor financiero IA": "AI financial advisor",
@@ -264,6 +269,11 @@
     "Data analytics": "Data analytics"
   },
     fr: {
+    "Nombre": "Nom",
+    "¡Registro exitoso!": "Inscription réussie !",
+    "Tu cuenta fue creada. Te enviamos un correo para confirmarla (revisa también la carpeta de spam). Después de confirmarla, inicia sesión para usar Monetra.": "Votre compte a été créé. Nous vous avons envoyé un e-mail de confirmation (vérifiez aussi vos spams). Après l'avoir confirmé, connectez-vous pour utiliser Monetra.",
+    "Ir a iniciar sesión": "Aller à la connexion",
+    "Ahora inicia sesión con tu correo y contraseña.": "Connectez-vous maintenant avec votre e-mail et votre mot de passe.",
     "Asesor IA": "Conseiller IA",
     "Administrador": "Administrateur",
     "Asesor financiero IA": "Conseiller financier IA",

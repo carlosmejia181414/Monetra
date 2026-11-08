@@ -3,6 +3,8 @@
   const $ = id => document.getElementById(id);
   const charts = {};
   const PAL = ["#ff7a5c", "#ffcf4a", "#e8456b", "#4cd4a0", "#d9b8ff", "#8f7bd6"];
+  const PAL_DARK = PAL.slice(), PAL_LIGHT = ["#6c1f7c", "#e0a21b", "#1f9d57", "#17408f", "#d92d4f", "#8f3da3"];
+  function syncPal() { PAL.splice(0, PAL.length, ...((window.MonetraTheme && MonetraTheme.get() === "light") ? PAL_LIGHT : PAL_DARK)); }
   const EVN = { page_view: "Páginas vistas", click_signup: "Clic en Crear cuenta", click_login: "Clic en Entrar", app_open: "Entradas a la app", download_brochure: "Descarga brochure", download_manual: "Descarga manual", ai_advice: "Consultas al Asesor IA", export_data: "Exportar datos", import_data: "Importar datos", theme_toggle: "Cambio de tema",
     tab_transactions: "Pestaña Registrar", tab_categories: "Pestaña Categorías", tab_charts: "Pestaña Gráficos", tab_analytics: "Pestaña Analytics", tab_advisor: "Pestaña Asesor IA", tab_household: "Pestaña Hogar", tab_profile: "Pestaña Perfil" };
   const DAYS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
@@ -16,6 +18,7 @@
 
   function state(html) { $("state").classList.remove("hidden"); $("panel").classList.add("hidden"); $("state").innerHTML = html; }
   function draw(id, cfg) {
+    syncPal();
     if (charts[id]) charts[id].destroy();
     if (window.MonetraTheme) MonetraTheme.applyChart();
     charts[id] = new Chart($(id), cfg);
@@ -51,6 +54,7 @@
   }
 
   function renderResumen(s) {
+    syncPal();
     const c = s.cur, p = s.prev;
     $("kpis").innerHTML = [kpi("Visitantes únicos", c.visitors, p.visitors), kpi("Visitas a la portada", c.visits, p.visits), kpi("Registros nuevos", c.signups, p.signups), kpi("Clics en Crear cuenta", c.signup_clicks, p.signup_clicks),
       kpi("Entradas a la app", c.app_opens, p.app_opens), kpi("Usuarios activos", c.active_users, p.active_users), kpi("Movimientos creados", c.transactions, p.transactions), kpi("Descargas de PDF", c.downloads, p.downloads), kpi("Consultas IA", c.ai_queries, p.ai_queries)].join("");
