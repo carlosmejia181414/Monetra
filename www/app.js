@@ -175,7 +175,7 @@ function getTypeLabel(type) {
     savings: "Ahorro"
   };
 
-  return labels[type] || type;
+  return T(labels[type] || type);
 }
 
 function getCategoryName(categoryId) {
@@ -259,11 +259,6 @@ function renderCategoryOptions() {
     categorySelect.appendChild(option);
   });
 
-  const create = document.createElement("option");
-  create.value = "__new__";
-  create.textContent = "+ " + T("Crear categoría…");
-  categorySelect.appendChild(create);
-
   if (categories.some(category => category.id === selectedValue)) {
     categorySelect.value = selectedValue;
   }
@@ -280,9 +275,11 @@ function openInlineCategory(prefill) {
 function closeInlineCategory() {
   $("inlineCat").classList.add("hidden");
   $("inlineCatName").value = "";
-  if (categorySelect.value === "__new__") {
-    const first = [...categorySelect.options].find(o => o.value && o.value !== "__new__");
-    categorySelect.value = first ? first.value : "";
+  const pending = [...categorySelect.options].find(o => o.value === "__new__");
+  if (pending) {
+    const wasSelected = categorySelect.value === "__new__";
+    pending.remove();
+    if (wasSelected) { const first = [...categorySelect.options].find(o => o.value); categorySelect.value = first ? first.value : ""; }
   }
 }
 
@@ -304,9 +301,13 @@ async function saveInlineCategory() {
   }
 }
 
+$("newCatBtn").addEventListener("click", () => {
+  if (!$("inlineCat").classList.contains("hidden")) { $("inlineCatName").focus(); return; }
+  openInlineCategory();
+});
 categorySelect.addEventListener("change", () => {
-  if (categorySelect.value === "__new__") openInlineCategory();
-  else $("inlineCat").classList.add("hidden");
+  // Si elige una categoría existente, se cierra el panel de "nueva categoría".
+  if (categorySelect.value !== "__new__" && !$("inlineCat").classList.contains("hidden")) closeInlineCategory();
 });
 $("inlineCatSave").addEventListener("click", saveInlineCategory);
 $("inlineCatCancel").addEventListener("click", closeInlineCategory);
@@ -1980,7 +1981,10 @@ function fillFromReceipt(r) {
   const wanted = String(r.category || "").trim();
   const match = wanted && categoriesCache.find(c => c.kind === "variable" && c.name.trim().toLowerCase() === wanted.toLowerCase());
   if (match) categorySelect.value = match.id;
-  else if (wanted) { categorySelect.value = "__new__"; openInlineCategory(wanted); }
+  else if (wanted) {
+    const pend = document.createElement("option"); pend.value = "__new__"; pend.textContent = "+ " + wanted;
+    categorySelect.appendChild(pend); categorySelect.value = "__new__"; openInlineCategory(wanted);
+  }
 
   let amount = Number(r.total);
   let note = "";
@@ -2054,6 +2058,7 @@ async function enterApp() {
     if (prof && prof.ready && !prof.currency && transactionsCache.length === 0) promptCurrency();
     hideLogin();
     Data.subscribe(scheduleRemoteRefresh);
+    if (window.MonetraCountryReady && Data.setMyCountry) window.MonetraCountryReady.then(c => { if (c) Data.setMyCountry(c); });
     document.dispatchEvent(new CustomEvent("monetra:ready"));
   } catch (error) {
     console.error(error);

@@ -5,7 +5,7 @@
   function initial() {
     var s = stored();
     if (s === "light" || s === "dark") return s;
-    return window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    return "light"; /* por defecto claro; solo cambia si el usuario eligió oscuro */
   }
   function css(name, fallback) {
     var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -29,7 +29,7 @@
     });
     document.dispatchEvent(new CustomEvent("monetra:theme", { detail: { theme: theme } }));
   }
-  function current() { return document.documentElement.getAttribute("data-theme") || "dark"; }
+  function current() { return document.documentElement.getAttribute("data-theme") || "light"; }
   document.documentElement.setAttribute("data-theme", initial());
   window.MonetraTheme = { get: current, set: function (t) { set(t, true); }, toggle: function () { set(current() === "light" ? "dark" : "light", true); }, applyChart: applyChart };
   document.addEventListener("click", function (e) {

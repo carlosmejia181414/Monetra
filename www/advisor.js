@@ -13,7 +13,7 @@
       tipUp: (p) => "Tus gastos subieron " + p + "% frente al mes anterior. Identifica qué categoría los empujó.",
       tipGood: "Vas muy bien: mantén el hábito y destina el excedente a tu fondo de emergencia y a inversión.",
       tipInvest: p => "Si ya tienes fondo de emergencia, podrías invertir cerca de " + p + "% de tus ingresos de forma regular.",
-      running: "Consultando al experto IA...", done: "Análisis listo.", btnBusy: "Analizando..." },
+      running: "Consultando al experto IA...", done: "Análisis listo.", btnBusy: "Analizando...", last: "Última recomendación", lastOf: "Guardada el", replaced: "Se reemplaza cuando generes una nueva." },
     en: { score: "Financial health", good: "Very good", ok: "Could improve", bad: "Needs attention", income: "Income", expenses: "Expenses", savingsRate: "Savings rate", fixedRatio: "Fixed expenses / income",
       noData: "Not enough data this month yet. Record your income and expenses to get a diagnosis.",
       needs: "Needs (fixed expenses)", wants: "Wants (variable expenses)", save: "Savings & investing", now: "Now", target: "Target", invest: "To invest (approx.)", emergency: "Suggested emergency fund (3 months of expenses)",
@@ -24,7 +24,7 @@
       tipUp: p => "Spending rose " + p + "% versus last month. Find which category drove it.",
       tipGood: "You are doing great: keep the habit and send the surplus to your emergency fund and investments.",
       tipInvest: p => "If you already have an emergency fund, you could invest about " + p + "% of income regularly.",
-      running: "Asking the AI expert...", done: "Analysis ready.", btnBusy: "Analyzing..." },
+      running: "Asking the AI expert...", done: "Analysis ready.", btnBusy: "Analyzing...", last: "Latest recommendation", lastOf: "Saved on", replaced: "It is replaced when you generate a new one." },
     fr: { score: "Santé financière", good: "Très bonne", ok: "À améliorer", bad: "Attention", income: "Revenus", expenses: "Dépenses", savingsRate: "Taux d'épargne", fixedRatio: "Dépenses fixes / revenus",
       noData: "Pas encore assez de données ce mois-ci. Enregistrez vos revenus et dépenses pour obtenir un diagnostic.",
       needs: "Besoins (dépenses fixes)", wants: "Envies (dépenses variables)", save: "Épargne et investissement", now: "Actuel", target: "Objectif", invest: "À investir (approx.)", emergency: "Fonds d'urgence suggéré (3 mois de dépenses)",
@@ -35,7 +35,7 @@
       tipUp: p => "Les dépenses ont augmenté de " + p + " % par rapport au mois dernier. Repérez la catégorie responsable.",
       tipGood: "Très bien : gardez cette habitude et dirigez l'excédent vers votre fonds d'urgence et vos placements.",
       tipInvest: p => "Si vous avez déjà un fonds d'urgence, vous pourriez investir environ " + p + " % de vos revenus régulièrement.",
-      running: "Consultation de l'expert IA...", done: "Analyse prête.", btnBusy: "Analyse..." }
+      running: "Consultation de l'expert IA...", done: "Analyse prête.", btnBusy: "Analyse...", last: "Dernière recommandation", lastOf: "Enregistrée le", replaced: "Elle est remplacée quand vous en générez une nouvelle." }
   };
   const t = () => S[L()] || S.es;
   const money = v => (typeof formatCurrency === "function" ? formatCurrency(v) : "$" + (v || 0).toFixed(2));
@@ -138,6 +138,26 @@
     return html;
   }
 
+  function showAdvice(text, iso) {
+    const x = t();
+    $("aiResult").innerHTML = fmtAI(text || "");
+    let stamp = $("aiStamp");
+    if (!stamp) { stamp = document.createElement("div"); stamp.id = "aiStamp"; stamp.className = "ai-stamp"; $("aiResult").parentNode.insertBefore(stamp, $("aiResult")); }
+    if (iso) {
+      let when = iso;
+      try { when = new Date(iso).toLocaleString({ es: "es", en: "en-CA", fr: "fr-CA" }[L()] || "es", { dateStyle: "long", timeStyle: "short" }); } catch (e) {}
+      stamp.textContent = x.lastOf + " " + when + " · " + x.replaced;
+    } else stamp.textContent = "";
+    $("aiResultCard").classList.remove("hidden");
+  }
+  let lastLoaded = null;
+  async function loadLast() {
+    if (!$("aiResultCard") || !Data.getLastAdvice) return;
+    const r = await Data.getLastAdvice();
+    lastLoaded = r;
+    if (r && r.advice) showAdvice(r.advice, r.created_at);
+  }
+
   async function askAI() {
     const x = t(), btn = $("aiRunBtn"), msg = $("aiMsg");
     const d = diagnose();
@@ -154,8 +174,9 @@
         recurring: (d.months[0].items || []).filter(i => i.type === "fixed").map(i => ({ name: i.description || getCategoryName(i.categoryId), amount: i.amount })).slice(0, 20)
       };
       const res = await Data.askAdvisor(payload);
-      $("aiResult").innerHTML = fmtAI(res.text || "");
-      $("aiResultCard").classList.remove("hidden");
+      const sel = selected();
+      const savedAt = Data.saveLastAdvice ? await Data.saveLastAdvice(res.text || "", sel.y + "-" + String(sel.m + 1).padStart(2, "0"), L()) : null;
+      showAdvice(res.text || "", savedAt || new Date().toISOString());
       msg.textContent = x.done;
       if (window.MonetraTrack) MonetraTrack.event("ai_advice");
     } catch (e) {
@@ -171,7 +192,7 @@
     ["monthFilter", "yearFilter"].forEach(id => $(id) && $(id).addEventListener("change", () => setTimeout(render, 50)));
     document.querySelectorAll('[data-section="advisorSection"]').forEach(b => b.addEventListener("click", () => setTimeout(render, 150)));
   });
-  document.addEventListener("monetra:ready", render);
-  document.addEventListener("monetra:logout", () => { if ($("aiResultCard")) $("aiResultCard").classList.add("hidden"); });
+  document.addEventListener("monetra:ready", () => { render(); loadLast(); });
+  document.addEventListener("monetra:logout", () => { lastLoaded = null; if ($("aiResultCard")) $("aiResultCard").classList.add("hidden"); });
   window.MonetraAdvisor = { render, diagnose, collect, fmtAI };
 })();

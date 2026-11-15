@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
       method: "POST",
       headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
       body: JSON.stringify({
-        model: Deno.env.get("AI_MODEL") ?? "claude-sonnet-4-5",
+        model: Deno.env.get("AI_MODEL") ?? "claude-sonnet-5-5",
         max_tokens: 1200,
         system,
         messages: [{ role: "user", content: "Presupuesto:\n" + JSON.stringify(data) }],

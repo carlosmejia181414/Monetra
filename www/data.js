@@ -291,6 +291,24 @@
     return res.data;
   }
 
+  // Última recomendación del asesor IA (una por usuario; la nueva reemplaza a la anterior)
+  async function getLastAdvice() {
+    try {
+      const u = await sessionUser();
+      const r = await client.from("ai_last").select("advice,month,lang,created_at").eq("user_id", u.id).maybeSingle();
+      if (r.error) return null; // tabla ausente: se ignora
+      return r.data || null;
+    } catch (e) { return null; }
+  }
+  async function saveLastAdvice(advice, month, lang) {
+    try {
+      const u = await sessionUser();
+      const row = { user_id: u.id, advice: String(advice).slice(0, 20000), month: month || null, lang: lang || null, created_at: new Date().toISOString() };
+      const r = await client.from("ai_last").upsert(row, { onConflict: "user_id" }).select("created_at").maybeSingle();
+      return r.error ? null : row.created_at;
+    } catch (e) { return null; }
+  }
+
   async function isAdmin() {
     const u = await sessionUser();
     const r = await client.from("admins").select("user_id").eq("user_id", u.id).maybeSingle();
@@ -300,6 +318,14 @@
   async function adminStats(from, to, tz) {
     return check(await client.rpc("admin_stats", { p_from: from, p_to: to, p_tz: tz || "UTC" }), "No se pudieron cargar las estadísticas");
   }
+  async function adminGeo(from, to) {
+    const r = await client.rpc("admin_geo", { p_from: from, p_to: to });
+    return r.error ? null : r.data; // null si falta v9.sql
+  }
+  async function setMyCountry(code) {
+    try { await client.rpc("set_my_country", { p_country: code }); } catch (e) {}
+  }
+
   async function adminUsers(limit, offset, search) {
     return check(await client.rpc("admin_users", { p_limit: limit || 25, p_offset: offset || 0, p_search: search || "" }), "No se pudo cargar la lista de usuarios");
   }
@@ -398,7 +424,7 @@
   }
 
   window.Data = {
-    getProfile, saveProfile, uploadAvatar, removeAvatar, askAdvisor, isAdmin, adminStats, adminUsers,
+    getProfile, saveProfile, uploadAvatar, removeAvatar, askAdvisor, getLastAdvice, saveLastAdvice, isAdmin, adminStats, adminGeo, setMyCountry, adminUsers,
     myPlan, adminPlans, adminSetPlan, scanReceipt,
     getHousehold, setScope, getScope, createHousehold, joinHousehold, leaveHousehold,
     isConfigured,

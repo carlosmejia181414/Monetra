@@ -31,7 +31,7 @@
 
   function render() {
     const name = displayName(profile);
-    ["chipAvatar", "sideAvatar", "profAvatar"].forEach(id => paint($(id), profile));
+    ["chipAvatar", "sideAvatar", "profAvatar", "mobAvatar"].forEach(id => paint($(id), profile));
     $("chipName").textContent = name;
     $("sideName").textContent = name;
     $("sideEmail").textContent = profile.email;

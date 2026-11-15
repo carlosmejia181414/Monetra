@@ -68,7 +68,26 @@
     $("funnelNote").textContent = "Los pasos de visitas y clics se miden por sesión anónima; las cuentas y movimientos son de usuarios creados dentro del periodo, por lo que pueden no coincidir exactamente con los visitantes.";
   }
 
+  function countryName(c) {
+    if (!c || c === "??") return "Desconocido";
+    try { return new Intl.DisplayNames(["es"], { type: "region" }).of(c) + " (" + c + ")"; } catch (e) { return c; }
+  }
+  function renderGeo(g) {
+    const fill = (id, rows, key) => {
+      const total = rows.reduce((a, r) => a + Number(r[key]), 0) || 1;
+      $(id).innerHTML = rows.length ? rows.map(r => "<tr><td>" + esc(countryName(r.country)) + "</td><td style='text-align:right'><b>" + nf(r[key]) + "</b> <small class='muted'>" + Math.round(Number(r[key]) / total * 100) + "%</small></td></tr>").join("") : "<tr><td colspan='2' class='muted'>Sin datos todavía</td></tr>";
+    };
+    if (!g) {
+      $("tVisitCountries").innerHTML = $("tSignupCountries").innerHTML = "<tr><td colspan='2' class='muted'>Falta ejecutar supabase/v9.sql y publicar la función geo.</td></tr>";
+      return;
+    }
+    fill("tVisitCountries", g.visit_countries, "visitors");
+    fill("tSignupCountries", g.signup_countries, "n");
+    $("geoNote").textContent = "Solo se guarda el país (nunca la IP). Las visitas anteriores a v9 y las cuentas antiguas aparecen como «Desconocido»; el país de una cuenta se registra la primera vez que entra.";
+  }
+
   function renderAudiencia(s) {
+    renderGeo(window.__geo);
     const grid = {}; let mx = 1;
     s.heatmap.forEach(h => { grid[h.dow + "-" + h.hour] = Number(h.n); mx = Math.max(mx, Number(h.n)); });
     let html = "<div></div>" + Array.from({ length: 24 }, (_, h) => "<div class='hhead'>" + h + "</div>").join("");
@@ -149,6 +168,7 @@
       state("<h2>Cargando…</h2>");
       const r = range();
       S = await Data.adminStats(r.from, r.to, tz);
+      window.__geo = await Data.adminGeo(r.from, r.to);
       $("state").classList.add("hidden"); $("panel").classList.remove("hidden");
       alerts(S); renderResumen(S); renderAudiencia(S); renderUso(S); renderIA(S);
       usersPage = 0; loadUsers();

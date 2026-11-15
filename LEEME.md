@@ -1,5 +1,6 @@
 # Monetra (web)
 
+> **Versión actual: v9.** Ver `ACTUALIZAR-V9.md`.
 > **Versión actual: v8.** Ver `ACTUALIZAR-V8.md` (planes Gratis/Pro, gráfico único, monedas, escaneo de boletas).
 
 La guía paso a paso completa está en **GUIA-INSTALACION.md**. Para actualizar a la v5 (modo claro/oscuro, Asesor IA, Administrador, PDFs) lee **ACTUALIZAR-V5.md**. Para la v6 (paleta nueva y Administrador avanzado) lee **ACTUALIZAR-V6.md**.
