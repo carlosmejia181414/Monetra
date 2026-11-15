@@ -16,10 +16,10 @@
   <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" /><noscript><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" /></noscript>
-  <link rel="stylesheet" href="styles.css?v=11" />
-  <link rel="stylesheet" href="theme.css?v=11" />
-  <script src="vendor/chart.umd.min.js?v=11"></script>
-  <script src="theme.js?v=11"></script>
+  <link rel="stylesheet" href="styles.css?v=12" />
+  <link rel="stylesheet" href="theme.css?v=12" />
+  <script src="vendor/chart.umd.min.js?v=12"></script>
+  <script src="theme.js?v=12"></script>
 </head>
 <body class="locked">
   <script>
@@ -52,7 +52,7 @@
     <form id="loginForm" class="login-card">
       <a href="index.html" id="loginBack" class="login-back">← Inicio</a>
       <div class="lang-switch" data-lang-switch></div>
-      <img class="login-logo" src="logo.png?v=11" alt="Monetra" />
+      <img class="login-logo" src="logo.png?v=12" alt="Monetra" />
       <h2>Monetra</h2>
       <div id="authTabs" class="auth-tabs">
         <button type="button" data-mode="login" class="tab active">Iniciar sesión</button>
@@ -77,7 +77,7 @@
 
   <aside class="sidebar">
     <div class="brand">
-      <img class="brand-logo" src="logo.png?v=11" alt="" />
+      <img class="brand-logo" src="logo.png?v=12" alt="" />
       <div>
         <h1>Monetra</h1>
         <p>Finanzas personales</p>
@@ -120,6 +120,7 @@
           </button>
           <div class="user-menu hidden" id="userMenu">
             <button type="button" id="menuProfile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg><span>Mi perfil</span></button>
+            <button type="button" id="menuPlans"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><span>Planes</span></button>
             <button type="button" id="logoutBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg><span>Cerrar sesión</span></button>
           </div>
         </div>
@@ -144,6 +145,12 @@
     <section id="transactionsSection" class="page-section active-section">
       <div class="card">
         <h3>Registrar ingreso o gasto</h3>
+        <div class="scan-row">
+          <button type="button" id="scanBtn" class="secondary scan-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8V6a2 2 0 012-2h2M16 4h2a2 2 0 012 2v2M20 16v2a2 2 0 01-2 2h-2M8 20H6a2 2 0 01-2-2v-2"/><path d="M7 12h10"/></svg><span>Escanear boleta</span></button>
+          <input type="file" id="scanFile" accept="image/*" capture="environment" class="hidden" />
+          <p class="muted">Toma una foto de tu boleta y Monetra rellena el formulario. Tú confirmas antes de guardar.</p>
+        </div>
+        <p id="scanMsg" class="scan-msg hidden"></p>
         <form id="transactionForm">
           <div class="grid form-grid">
             <label>Fecha <input type="date" id="date" required /></label>
@@ -156,6 +163,13 @@
             </label>
             <label>Categoría <select id="categorySelect" required></select></label>
             <label>Monto <input type="number" id="amount" min="0" step="0.01" required /></label>
+            <label>Moneda <select id="currencySelect"></select></label>
+          </div>
+          <div id="inlineCat" class="inline-cat hidden">
+            <label>Nombre de la nueva categoría <input type="text" id="inlineCatName" maxlength="40" /></label>
+            <button type="button" id="inlineCatSave">Crear categoría</button>
+            <button type="button" id="inlineCatCancel" class="secondary">Cancelar</button>
+            <p class="kind-note" id="inlineCatKind"></p>
           </div>
           <label>Descripción <input type="text" id="description" placeholder="Ej: renta, supermercado, internet" /></label>
           <div class="form-actions">
@@ -226,90 +240,64 @@
     </section>
 
     <section id="chartsSection" class="page-section">
-      <div class="charts-grid pro-charts-grid">
-        <div class="card">
-          <h3>Distribución mensual</h3>
-          <p class="muted">Gastos fijos, variables y ahorro del mes seleccionado.</p>
-          <div class="chart-box"><canvas id="chartsMonthlyChart"></canvas></div>
+      <div class="card">
+        <h3>Gráfico de análisis</h3>
+        <p class="muted">Un solo gráfico: cámbialo con los filtros. El periodo termina en el mes y año elegidos en Filtros.</p>
+        <div class="explorer-controls">
+          <label>Qué ver
+            <select id="exMetric">
+              <option value="expenses">Gastos</option>
+              <option value="income">Ingresos</option>
+              <option value="savings">Ahorro</option>
+              <option value="all">Ingresos, gastos y ahorro</option>
+            </select>
+          </label>
+          <label>Agrupar por
+            <select id="exGroup">
+              <option value="category">Categoría</option>
+              <option value="month">Mes</option>
+              <option value="kind">Tipo de gasto</option>
+            </select>
+          </label>
+          <label>Periodo
+            <select id="exPeriod">
+              <option value="1">Este mes</option>
+              <option value="3">Últimos 3 meses</option>
+              <option value="6" data-pro="history">Últimos 6 meses</option>
+              <option value="12" data-pro="history">Últimos 12 meses</option>
+              <option value="year" data-pro="history">Año completo</option>
+            </select>
+          </label>
+          <label>Vista
+            <select id="exView">
+              <option value="normal">Normal</option>
+              <option value="pareto" data-pro="history">Pareto 80/20</option>
+              <option value="rule" data-pro="history">Regla 50/30/20</option>
+              <option value="cumulative" data-pro="history">Acumulado</option>
+              <option value="heatmap" data-pro="history">Mapa de calor anual</option>
+            </select>
+          </label>
+          <label>Forma
+            <select id="exShape">
+              <option value="auto">Automática</option>
+              <option value="bar">Barras</option>
+              <option value="line">Línea</option>
+              <option value="doughnut">Dona</option>
+            </select>
+          </label>
         </div>
+        <div id="exChartView" class="explorer-view"><div class="explorer-box"><canvas id="explorerChart"></canvas></div></div>
+        <div id="exHeatView" class="explorer-view" hidden><div id="categoryHeatmap" class="heatmap-box"></div></div>
+        <p id="exHint" class="explorer-hint"></p>
+      </div>
 
-        <div class="card">
-          <h3>Gasto por categoría</h3>
-          <p class="muted">Ranking de categorías de gasto del mes.</p>
-          <div class="chart-box"><canvas id="categoryReportChart"></canvas></div>
-        </div>
-
-        <div class="card wide-card">
-          <h3>Ingresos, gastos y ahorro por mes</h3>
-          <p class="muted">Comparativo anual por mes.</p>
-          <div class="chart-box chart-box-wide"><canvas id="yearlyChart"></canvas></div>
-        </div>
-
-        <div class="card wide-card">
-          <h3>Tendencia de gastos y ahorro</h3>
-          <p class="muted">Evolución mensual de gastos totales y ahorro.</p>
-          <div class="chart-box chart-box-wide"><canvas id="expenseTrendChart"></canvas></div>
-        </div>
-
-        <div class="card">
-          <h3>Pareto de gastos</h3>
-          <p class="muted">Detecta las categorías que concentran la mayor parte del gasto.</p>
-          <div class="chart-box"><canvas id="paretoChart"></canvas></div>
-        </div>
-
-        <div class="card">
-          <h3>% de gasto por categoría</h3>
-          <p class="muted">Participación porcentual de cada categoría en el gasto total.</p>
-          <div class="chart-box"><canvas id="categoryShareChart"></canvas></div>
-        </div>
-
-        <div class="card wide-card">
-          <h3>Gastos fijos vs variables por mes</h3>
-          <p class="muted">Compara qué parte de tus gastos son compromisos y qué parte es ajustable.</p>
-          <div class="chart-box chart-box-wide"><canvas id="fixedVariableStackedChart"></canvas></div>
-        </div>
-
-        <div class="card wide-card">
-          <h3>Ahorro acumulado anual</h3>
-          <p class="muted">Suma progresiva del ahorro del año seleccionado.</p>
-          <div class="chart-box chart-box-wide"><canvas id="cumulativeSavingsChart"></canvas></div>
-        </div>
-
-        <div class="card wide-card">
-          <h3>Gastos acumulados anuales</h3>
-          <p class="muted">Suma progresiva de gastos fijos, variables y totales.</p>
-          <div class="chart-box chart-box-wide"><canvas id="cumulativeExpensesChart"></canvas></div>
-        </div>
-
-        <div class="card">
-          <h3>Ingreso vs gasto mensual</h3>
-          <p class="muted">Relación entre lo que entra y lo que sale en el mes seleccionado.</p>
-          <div class="chart-box"><canvas id="incomeExpenseRatioChart"></canvas></div>
-        </div>
-
-        <div class="card">
-          <h3>Score 50/30/20</h3>
-          <p class="muted">Visualiza qué tan cerca estás de la regla sugerida.</p>
-          <div class="chart-box"><canvas id="ruleScoreChart"></canvas></div>
-        </div>
-
-        <div class="card wide-card">
-          <h3>Heatmap anual por categoría</h3>
-          <p class="muted">Intensidad de gastos por categoría y por mes.</p>
-          <div id="categoryHeatmap" class="heatmap-box"></div>
-        </div>
-
-        <div class="card wide-card">
-          <h3>Tabla resumen de gráficos</h3>
-          <p class="muted">Lectura rápida de los indicadores visualizados.</p>
-          <div class="table-wrapper">
-            <table>
-              <thead>
-                <tr><th>Indicador</th><th>Resultado</th><th>Lectura</th></tr>
-              </thead>
-              <tbody id="chartsSummaryTable"></tbody>
-            </table>
-          </div>
+      <div class="card">
+        <h3>Datos del gráfico</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr id="exHead"></tr></thead>
+            <tbody id="exTable"></tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -348,6 +336,8 @@
           <label>Correo de la cuenta <span class="static-field" id="profEmail"></span></label>
           <label>Cuenta <span class="static-field" id="profProvider"></span></label>
           <label>Idioma <div class="lang-switch" data-lang-switch></div></label>
+          <label>Moneda <select id="profCurrency"></select></label>
+          <p class="muted small" id="fxNote"></p>
           <div class="form-actions">
             <button type="submit">Guardar perfil</button>
             <button type="button" id="profLogout" class="secondary">Cerrar sesión</button>
@@ -523,13 +513,15 @@
     // Limpia el service worker de versiones anteriores (si existía).
     if ("serviceWorker" in navigator) navigator.serviceWorker.getRegistrations().then(r => r.forEach(x => x.unregister()));
   </script>
-  <script src="i18n.js?v=11"></script>
-  <script src="vendor/supabase.js?v=11"></script>
-  <script src="config.js?v=11"></script>
-  <script src="data.js?v=11"></script>
-  <script src="app.js?v=11"></script>
-  <script src="profile.js?v=11"></script>
-  <script src="advisor.js?v=11"></script>
-  <script src="track.js?v=11"></script>
+  <script src="i18n.js?v=12"></script>
+  <script src="vendor/supabase.js?v=12"></script>
+  <script src="config.js?v=12"></script>
+  <script src="data.js?v=12"></script>
+  <script src="fx.js?v=12"></script>
+  <script src="plan.js?v=12"></script>
+  <script src="app.js?v=12"></script>
+  <script src="profile.js?v=12"></script>
+  <script src="advisor.js?v=12"></script>
+  <script src="track.js?v=12"></script>
 </body>
 </html>

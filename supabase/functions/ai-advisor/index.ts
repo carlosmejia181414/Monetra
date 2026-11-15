@@ -31,7 +31,13 @@ Deno.serve(async (req) => {
     const admin = createClient(url, service);
     const { data: allowed, error: le } = await admin.rpc("ai_consume", { p_user: u.user.id, p_limit: limit });
     if (le) return json({ error: "Falta ejecutar supabase/ia.sql en Supabase." }, 500);
-    if (!allowed) return json({ error: `Llegaste al límite de ${limit} consultas de IA por hoy. Vuelve mañana.` }, 429);
+    if (!allowed) {
+      const { data: plan } = await admin.rpc("plan_of", { p_user: u.user.id });
+      if (plan !== "pro") {
+        return json({ error: "Llegaste al límite de 3 consultas de IA al mes del plan Gratis. Con Pro tienes muchas más.", code: "free_limit" }, 429);
+      }
+      return json({ error: `Llegaste al límite de ${limit} consultas de IA por hoy. Vuelve mañana.` }, 429);
+    }
 
     const b = await req.json().catch(() => ({}));
     const lang = LANGS[b.lang] ? b.lang : "es";

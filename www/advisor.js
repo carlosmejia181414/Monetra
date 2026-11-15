@@ -147,7 +147,7 @@
     try {
       const payload = {
         lang: L(),
-        currency: "CAD",
+        currency: (window.MonetraFX && MonetraFX.display) || "CAD",
         month: selected().y + "-" + String(selected().m + 1).padStart(2, "0"),
         months: d.months.map(mm => ({ month: mm.y + "-" + String(mm.m + 1).padStart(2, "0"), income: Math.round(mm.tot.income), fixed: Math.round(mm.tot.fixed), variable: Math.round(mm.tot.variable) })),
         categories: d.cats.slice(0, 12).map(c => ({ name: c.name, amount: Math.round(c.amount) })),
@@ -159,13 +159,15 @@
       msg.textContent = x.done;
       if (window.MonetraTrack) MonetraTrack.event("ai_advice");
     } catch (e) {
-      msg.textContent = e.message || String(e); msg.classList.add("bad");
+      msg.textContent = window.T ? T(e.message || String(e)) : (e.message || String(e)); msg.classList.add("bad");
+      if (e.code === "free_limit" && window.MonetraPlan) { MonetraPlan.upsell("ai"); if (MonetraPlan.load) MonetraPlan.load(); }
     } finally { btn.disabled = false; btn.textContent = original; }
   }
 
   document.addEventListener("DOMContentLoaded", () => {
     if ($("aiRunBtn")) $("aiRunBtn").addEventListener("click", askAI);
     if ($("aiRefreshBtn")) $("aiRefreshBtn").addEventListener("click", render);
+    document.addEventListener("monetra:currency", () => setTimeout(render, 50));
     ["monthFilter", "yearFilter"].forEach(id => $(id) && $(id).addEventListener("change", () => setTimeout(render, 50)));
     document.querySelectorAll('[data-section="advisorSection"]').forEach(b => b.addEventListener("click", () => setTimeout(render, 150)));
   });

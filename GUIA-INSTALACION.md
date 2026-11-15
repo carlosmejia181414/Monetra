@@ -1,5 +1,7 @@
 # Monetra - Guía completa de instalación (web + base de datos)
 
+> **Versión actual: v8.** Ver `ACTUALIZAR-V8.md` (planes Gratis/Pro, gráfico único, monedas, escaneo de boletas).
+
 Monetra es una página web de finanzas personales. Los datos se guardan en una base de datos en la nube (Supabase) y la página se publica gratis con GitHub Pages.
 
 ## Archivos del proyecto

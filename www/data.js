@@ -33,6 +33,11 @@
     if (/household_id|households|household_members/.test(msg) || error.code === "42703" || error.code === "42P01" || error.code === "PGRST205") {
       return new Error("La base de datos no está actualizada: ejecuta supabase/hogar.sql en el SQL Editor de Supabase.");
     }
+    if (/limit_categories/.test(msg)) { const e = new Error("Llegaste al límite de categorías del plan Gratis."); e.code = "limit_categories"; return e; }
+    if (/pro_required/.test(msg)) { const e = new Error("Crear un hogar compartido es una función del plan Pro."); e.code = "pro_required"; return e; }
+    if (/currency/i.test(msg) && (error.code === "PGRST204" || error.code === "42703")) {
+      return new Error("La base de datos no está actualizada: ejecuta supabase/plan.sql en el SQL Editor de Supabase.");
+    }
     if (/already_in_household/.test(msg)) return new Error("Ya perteneces a un hogar.");
     if (/invalid_code/.test(msg)) return new Error("Código de invitación no válido.");
     if (/Invalid login credentials/i.test(msg)) return new Error("Correo o contraseña incorrectos.");
@@ -56,6 +61,7 @@
     categoryId: r.category_id,
     amount: Number(r.amount),
     description: r.description || "",
+    currency: r.currency || null,
     parentRecurringId: r.parent_recurring_id || null,
     overrideYear: Number.isInteger(r.override_year) ? r.override_year : null,
     overrideMonth: Number.isInteger(r.override_month) ? r.override_month : null
@@ -154,6 +160,7 @@
         category_id: t.categoryId,
         amount: Number(t.amount),
         description: t.description || "",
+        currency: t.currency || null,
         parent_recurring_id: t.parentRecurringId || null,
         override_year: Number.isInteger(t.overrideYear) ? t.overrideYear : null,
         override_month: Number.isInteger(t.overrideMonth) ? t.overrideMonth : null
@@ -171,6 +178,7 @@
       amount: Number(u.amount),
       description: u.description || ""
     };
+    if (u.currency) patch.currency = u.currency;
     // Igual que antes: estos campos solo se cambian si vienen informados.
     if (u.parentRecurringId) patch.parent_recurring_id = u.parentRecurringId;
     if (Number.isInteger(u.overrideYear)) patch.override_year = u.overrideYear;
@@ -248,6 +256,7 @@
         category_id: idMap.get(t.categoryId),
         amount: Number(t.amount),
         description: t.description || "",
+        currency: /^[A-Z]{3}$/.test(String(t.currency || "")) ? t.currency : null,
         parent_recurring_id: t.parentRecurringId || null,
         override_year: Number.isInteger(t.overrideYear) ? t.overrideYear : null,
         override_month: Number.isInteger(t.overrideMonth) ? t.overrideMonth : null
@@ -271,10 +280,12 @@
   async function askAdvisor(payload) {
     const res = await client.functions.invoke("ai-advisor", { body: payload });
     if (res.error) {
-      let msg = res.error.message || "";
-      try { const j = await res.error.context.json(); if (j && j.error) msg = j.error; } catch (e) {}
+      let msg = res.error.message || "", code = "";
+      try { const j = await res.error.context.json(); if (j && j.error) msg = j.error; if (j && j.code) code = j.code; } catch (e) {}
       if (/not found|404|failed to send/i.test(msg)) msg = "La función ai-advisor aún no está publicada en Supabase (ver GUIA-INSTALACION.md, paso del asesor IA).";
-      throw new Error(msg || "No se pudo consultar a la IA.");
+      const err = new Error(msg || "No se pudo consultar a la IA.");
+      err.code = code;
+      throw err;
     }
     if (res.data && res.data.error) throw new Error(res.data.error);
     return res.data;
@@ -291,6 +302,33 @@
   }
   async function adminUsers(limit, offset, search) {
     return check(await client.rpc("admin_users", { p_limit: limit || 25, p_offset: offset || 0, p_search: search || "" }), "No se pudo cargar la lista de usuarios");
+  }
+
+  // ---------- Planes (Gratis / Pro) y escaneo de boletas ----------
+  // Devuelve null si plan.sql aún no está instalado: la app entonces no aplica límites.
+  async function myPlan() {
+    const res = await client.rpc("my_plan");
+    return res.error ? null : res.data;
+  }
+  async function adminPlans() {
+    const res = await client.rpc("admin_plans");
+    return res.error ? [] : res.data || [];
+  }
+  async function adminSetPlan(email, plan, days) {
+    return check(await client.rpc("admin_set_plan", { p_email: email, p_plan: plan, p_days: days == null ? null : days }), "No se pudo cambiar el plan");
+  }
+  async function scanReceipt(payload) {
+    const res = await client.functions.invoke("receipt-scan", { body: payload });
+    if (res.error) {
+      let msg = res.error.message || "", code = "";
+      try { const j = await res.error.context.json(); if (j && j.error) msg = j.error; if (j && j.code) code = j.code; } catch (e) {}
+      if (/not found|404|failed to send/i.test(msg)) msg = "La función receipt-scan aún no está publicada en Supabase (ver ACTUALIZAR-V8.md).";
+      const err = new Error(msg || "No se pudo leer la boleta.");
+      err.code = code;
+      throw err;
+    }
+    if (res.data && res.data.error) { const e = new Error(res.data.error); e.code = res.data.code || ""; throw e; }
+    return res.data;
   }
 
   const setScope = s => { scope = s; localStorage.setItem("mb_scope", s); };
@@ -321,10 +359,13 @@
       id: u.id, email: u.email || "", name: m.full_name || m.name || "", avatarUrl: m.avatar_url || m.picture || "",
       provider: (u.app_metadata && u.app_metadata.provider) || "email", ready: false
     };
-    const res = await client.from("profiles").select("display_name,avatar_url").eq("user_id", u.id).maybeSingle();
+    base.currency = "";
+    let res = await client.from("profiles").select("display_name,avatar_url,currency").eq("user_id", u.id).maybeSingle();
+    if (res.error) res = await client.from("profiles").select("display_name,avatar_url").eq("user_id", u.id).maybeSingle(); // plan.sql aún no ejecutado
     if (res.error) return base; // perfil.sql aún no ejecutado: se usan los datos de la cuenta
     base.ready = true;
     if (res.data) {
+      if (res.data.currency) base.currency = res.data.currency;
       if (res.data.display_name) base.name = res.data.display_name;
       if (res.data.avatar_url) base.avatarUrl = res.data.avatar_url;
     }
@@ -336,6 +377,7 @@
     const row = { user_id: u.id, updated_at: new Date().toISOString() };
     if ("displayName" in patch) row.display_name = String(patch.displayName || "").trim().slice(0, 60) || null;
     if ("avatarUrl" in patch) row.avatar_url = patch.avatarUrl || null;
+    if ("currency" in patch) row.currency = /^[A-Z]{3}$/.test(String(patch.currency || "")) ? patch.currency : null;
     check(await client.from("profiles").upsert(row, { onConflict: "user_id" }), "No se pudo guardar el perfil");
   }
 
@@ -357,6 +399,7 @@
 
   window.Data = {
     getProfile, saveProfile, uploadAvatar, removeAvatar, askAdvisor, isAdmin, adminStats, adminUsers,
+    myPlan, adminPlans, adminSetPlan, scanReceipt,
     getHousehold, setScope, getScope, createHousehold, joinHousehold, leaveHousehold,
     isConfigured,
     getSession,

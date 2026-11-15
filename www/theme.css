@@ -226,3 +226,51 @@ a.nav-btn{text-decoration:none}
 [data-theme="light"] button.nav-btn.active{background:#f1e4f5;color:var(--pri)}
 [data-theme="light"] button.user-chip,[data-theme="light"] button.google-btn,[data-theme="light"] button.tab{background:#fff;color:var(--text);box-shadow:none;border:1px solid #e4e7ef}
 [data-theme="light"] button.tab.active{background:#f1e4f5;color:var(--pri);border-color:transparent}
+
+/* ===== v8: planes, ventanas, moneda, categoría rápida, explorador de gráficos, boletas ===== */
+.plan-card{margin-top:auto;margin-bottom:10px;padding:12px 14px;border-radius:16px;background:var(--glass);border:1px solid var(--stroke);display:flex;flex-direction:column;gap:6px}
+.plan-card+.side-profile{margin-top:0}
+.plan-card .plan-top{display:flex;align-items:center;gap:8px}
+.plan-card small{color:var(--muted);font-size:12px;line-height:1.35}
+.plan-card.is-pro{border-color:rgba(255,207,74,.5)}
+.pro-tag{display:inline-block;padding:2px 7px;border-radius:7px;background:linear-gradient(135deg,#ffcf4a,#ff7a5c);color:#2a1a00;font-size:10.5px;font-weight:800;letter-spacing:.6px}
+.plan-btn{padding:8px 10px;font-size:13px;border-radius:10px;margin-top:2px}
+.lock{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:-2px;margin-left:4px;opacity:.8}
+.modal-back{position:fixed;inset:0;z-index:5000;display:grid;place-items:center;padding:16px;background:rgba(8,6,14,.62);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.modal-back.hidden{display:none}
+.modal{position:relative;width:min(640px,100%);max-height:92vh;overflow:auto;background:var(--card,#1e1b25);color:var(--text);border:1px solid var(--stroke);border-radius:20px;padding:26px 24px;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.modal h3{margin:0 0 6px;font-size:22px}
+.modal-x{position:absolute;right:12px;top:10px;width:34px;height:34px;border-radius:50%;padding:0;font-size:22px;line-height:1;background:var(--glass2);color:var(--text);box-shadow:none;border:1px solid var(--stroke)}
+.modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.upsell-ico{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;font-size:26px;margin-bottom:10px;background:linear-gradient(135deg,#ffcf4a,#ff7a5c);color:#2a1a00}
+.plan-table{width:100%;border-collapse:collapse;margin:12px 0}
+.plan-table th,.plan-table td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--stroke);font-size:14px;vertical-align:top}
+.plan-table th small{color:var(--muted);font-weight:600}
+.plan-table .th-pro,.plan-table td:last-child{color:var(--text)}
+.plan-table td:last-child{background:rgba(255,207,74,.07)}
+.btn-pro{display:block;text-align:center;padding:13px 16px;border-radius:14px;font-weight:800;color:#2a1a00;background:linear-gradient(135deg,#ffcf4a,#ff7a5c);border:0;width:100%;margin:6px 0 8px;text-decoration:none;cursor:pointer}
+.btn-pro[disabled]{opacity:.55;cursor:not-allowed}
+.plan-note{font-weight:700;color:var(--pos)}.small{font-size:12.5px}
+/* categoría rápida y moneda en el formulario */
+.inline-cat{margin:4px 0 12px;padding:12px;border:1px dashed var(--stroke);border-radius:14px;background:var(--glass);display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.inline-cat.hidden{display:none}
+.inline-cat label{flex:1 1 200px;margin:0}
+.inline-cat .kind-note{flex:1 1 100%;margin:0;color:var(--muted);font-size:12.5px}
+.scan-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px}
+.scan-row .muted{margin:0;font-size:12.5px}
+.scan-btn{display:inline-flex;align-items:center;gap:8px}
+.scan-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.scan-msg{font-size:13px;margin:0 0 10px;color:var(--muted)}.scan-msg.ok{color:var(--pos)}.scan-msg.err{color:var(--neg)}
+/* explorador de gráficos */
+.explorer-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:14px}
+.explorer-controls label{margin:0}
+.explorer-box{position:relative;height:420px}
+.explorer-box canvas{max-height:100%}
+.explorer-hint{margin:10px 0 0;font-size:13px;color:var(--muted)}
+.explorer-view[hidden]{display:none}
+@media(max-width:520px){.explorer-box{height:340px}.modal{padding:22px 16px}}
+[data-theme="light"] .modal{background:#fff}
+[data-theme="light"] .plan-card{background:#fff}
+[data-theme="light"] .plan-table td:last-child{background:#fdf6e3}
+[data-theme="light"] .btn-pro,[data-theme="light"] .upsell-ico{color:#3a2600}
+td.num{text-align:right;font-variant-numeric:tabular-nums}

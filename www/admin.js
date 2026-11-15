@@ -5,7 +5,7 @@
   const PAL = ["#ff7a5c", "#ffcf4a", "#e8456b", "#4cd4a0", "#d9b8ff", "#8f7bd6"];
   const PAL_DARK = PAL.slice(), PAL_LIGHT = ["#6c1f7c", "#e0a21b", "#1f9d57", "#17408f", "#d92d4f", "#8f3da3"];
   function syncPal() { PAL.splice(0, PAL.length, ...((window.MonetraTheme && MonetraTheme.get() === "light") ? PAL_LIGHT : PAL_DARK)); }
-  const EVN = { page_view: "Páginas vistas", click_signup: "Clic en Crear cuenta", click_login: "Clic en Entrar", app_open: "Entradas a la app", download_brochure: "Descarga brochure", download_manual: "Descarga manual", ai_advice: "Consultas al Asesor IA", export_data: "Exportar datos", import_data: "Importar datos", theme_toggle: "Cambio de tema",
+  const EVN = { scan_receipt: "Boletas escaneadas", upsell_household: "Aviso Pro: Hogar", upsell_categories: "Aviso Pro: Categorías", upsell_ai: "Aviso Pro: Asesor IA", upsell_scan: "Aviso Pro: Boletas", upsell_history: "Aviso Pro: Análisis", upsell_currency: "Aviso Pro: Monedas", page_view: "Páginas vistas", click_signup: "Clic en Crear cuenta", click_login: "Clic en Entrar", app_open: "Entradas a la app", download_brochure: "Descarga brochure", download_manual: "Descarga manual", ai_advice: "Consultas al Asesor IA", export_data: "Exportar datos", import_data: "Importar datos", theme_toggle: "Cambio de tema",
     tab_transactions: "Pestaña Registrar", tab_categories: "Pestaña Categorías", tab_charts: "Pestaña Gráficos", tab_analytics: "Pestaña Analytics", tab_advisor: "Pestaña Asesor IA", tab_household: "Pestaña Hogar", tab_profile: "Pestaña Perfil" };
   const DAYS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
   const nf = n => new Intl.NumberFormat("es").format(Number(n) || 0);
@@ -106,8 +106,16 @@
       $("uPage").textContent = "Página " + (usersPage + 1) + " de " + Math.max(1, Math.ceil(r.total / PER));
       $("uPrev").disabled = usersPage === 0; $("uNext").disabled = (usersPage + 1) * PER >= r.total;
       const dt = v => (v ? new Date(v).toLocaleDateString("es") : "—");
-      $("tUsers").innerHTML = r.rows.length ? r.rows.map(u => "<tr><td>" + esc(u.email) + "</td><td>" + dt(u.created_at) + "</td><td>" + dt(u.last_sign_in_at) + "</td><td>" + (u.provider === "google" ? "Google" : "Correo") + "</td><td style='text-align:right'>" + nf(u.tx_count) + (Number(u.tx_count) === 0 ? " <span class='pill no'>sin uso</span>" : "") + "</td><td>" + dt(u.last_tx) + "</td><td>" + (u.in_household ? "<span class='pill yes'>Sí</span>" : "—") + "</td><td style='text-align:right'>" + nf(u.ai_30d) + "</td></tr>").join("") : "<tr><td colspan='8' class='muted'>Sin resultados</td></tr>";
-    } catch (e) { $("tUsers").innerHTML = "<tr><td colspan='8' class='muted'>" + esc(e.message) + "</td></tr>"; }
+      const plans = {};
+      (await Data.adminPlans()).forEach(p => { plans[String(p.email).toLowerCase()] = p; });
+      const planCell = u => {
+        const p = plans[String(u.email).toLowerCase()];
+        const pro = p && p.plan === "pro";
+        const label = pro ? "<span class='pill yes'>Pro" + (p.source === "trial" ? " (prueba)" : "") + "</span>" + (p.pro_until ? " <small class='muted'>hasta " + dt(p.pro_until) + "</small>" : "") : "<span class='pill no'>Gratis</span>";
+        return label + " <button type='button' class='secondary sm' data-plan-act='" + (pro ? "free" : "pro") + "' data-email='" + esc(u.email) + "'>" + (pro ? "Quitar Pro" : "Dar Pro") + "</button>";
+      };
+      $("tUsers").innerHTML = r.rows.length ? r.rows.map(u => "<tr><td>" + esc(u.email) + "</td><td>" + dt(u.created_at) + "</td><td>" + dt(u.last_sign_in_at) + "</td><td>" + (u.provider === "google" ? "Google" : "Correo") + "</td><td style='text-align:right'>" + nf(u.tx_count) + (Number(u.tx_count) === 0 ? " <span class='pill no'>sin uso</span>" : "") + "</td><td>" + dt(u.last_tx) + "</td><td>" + (u.in_household ? "<span class='pill yes'>Sí</span>" : "—") + "</td><td style='text-align:right'>" + nf(u.ai_30d) + "</td><td style='white-space:nowrap'>" + planCell(u) + "</td></tr>").join("") : "<tr><td colspan='9' class='muted'>Sin resultados</td></tr>";
+    } catch (e) { $("tUsers").innerHTML = "<tr><td colspan='9' class='muted'>" + esc(e.message) + "</td></tr>"; }
   }
 
   function csvCell(v) { v = v == null ? "" : String(v); return /[",\n;]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
@@ -169,6 +177,20 @@
     document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x === b));
     document.querySelectorAll(".pane").forEach(p => p.classList.toggle("on", p.id === b.dataset.pane));
     Object.values(charts).forEach(c => { try { c.resize(); } catch (er) {} });
+  });
+  $("tUsers").addEventListener("click", async ev => {
+    const b = ev.target.closest("[data-plan-act]");
+    if (!b) return;
+    const email = b.dataset.email, plan = b.dataset.planAct;
+    let days = null;
+    if (plan === "pro") {
+      const v = prompt("¿Cuántos días de Pro para " + email + "? (déjalo vacío para sin vencimiento)", "30");
+      if (v === null) return;
+      days = v.trim() === "" ? null : Math.max(1, Math.min(3650, parseInt(v, 10) || 30));
+    } else if (!confirm("¿Quitar el plan Pro a " + email + "?")) return;
+    b.disabled = true;
+    try { await Data.adminSetPlan(email, plan, days); } catch (e) { alert(e.message); }
+    loadUsers();
   });
   $("uSearchBtn").addEventListener("click", () => { usersSearch = $("uSearch").value.trim(); usersPage = 0; loadUsers(); });
   $("uSearch").addEventListener("keydown", e => { if (e.key === "Enter") $("uSearchBtn").click(); });

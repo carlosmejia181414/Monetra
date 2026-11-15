@@ -52,14 +52,16 @@
     footer{background:var(--deep);color:#cdb8da;padding:36px 0 calc(36px + env(safe-area-inset-bottom,0));font-size:14px}footer .wrap{display:flex;gap:18px;flex-wrap:wrap;align-items:center;justify-content:space-between}footer .logo{font-size:20px;color:#fff;margin:0}footer nav{display:flex;gap:20px}footer a:hover{color:var(--sun)}
     .lang-switch{display:flex;gap:6px;align-items:center}.lang-switch button{width:17px;height:17px;min-height:0;padding:0;border-radius:50%;border:2px solid transparent;background:#fff;overflow:hidden;opacity:.6;cursor:pointer;box-shadow:0 1px 4px rgba(42,15,58,.25)}.lang-switch button.on{opacity:1;border-color:var(--rose)}.lang-switch img{width:100%;height:100%;object-fit:cover;display:block}
     @media(max-width:1100px){.links{display:none}}
+
+    .plans{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:860px;margin:0 auto}.plan{background:#fff;border:1px solid var(--line);border-radius:22px;padding:30px;box-shadow:0 10px 30px rgba(74,26,99,.06)}.plan.pro{border:2px solid var(--mag);box-shadow:0 18px 40px rgba(74,26,99,.16);position:relative}.plan .tag{position:absolute;top:-13px;right:22px;background:linear-gradient(135deg,var(--plum),var(--rose));color:#fff;font-size:12px;font-weight:800;padding:5px 12px;border-radius:99px}.plan h3{margin:0;font-size:22px}.plan .price{font-size:38px;font-weight:800;margin:8px 0 4px}.plan .price small{font-size:15px;font-weight:600;color:var(--muted)}.plan ul{list-style:none;padding:0;margin:18px 0 22px;display:grid;gap:10px;font-size:15.5px}.plan li:before{content:"✓";color:var(--mag);font-weight:800;margin-right:9px}.plan li.no{color:var(--muted)}.plan li.no:before{content:"–";color:var(--muted)}.plan{display:flex;flex-direction:column}.plan ul{flex:1}.plan .btn{width:100%}.plan .btn.out{color:#4a1a63;border-color:#4a1a63}.plans-note{text-align:center;color:var(--muted);font-size:14px;margin-top:16px}@media(max-width:700px){.plans{grid-template-columns:1fr}}
     @media(max-width:900px){.copy h1{color:#2a0f3a}.copy h1 span{color:#c2255c}.copy p{color:#4a1a63}.micro{color:#6b3a78}.hero .cta .btn.out{color:#4a1a63;border-color:#4a1a63;background:rgba(255,255,255,.6)}.nav .btn.dark{display:none}.hero .wrap{grid-template-columns:1fr;min-height:0;padding-top:30px}.copy{order:-1}.links{display:none}.split{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}.strip .wrap{grid-template-columns:1fr 1fr}.stage{height:540px}.hero{min-height:0}}
     @media(max-width:560px){.lang-switch{gap:8px}.lang-switch button{width:26px;height:26px}.logo span{font-size:19px}#downloads .grid3{grid-template-columns:1fr!important}.grid3{grid-template-columns:1fr}.nav .btn.hide-xs{display:none}.nav .wrap{gap:8px}.nav .btn.sm{padding:10px 14px;font-size:14px}.blob{width:400px}}
   </style>
 </head>
 <body>
   <header class="nav"><div class="wrap">
-    <a class="logo" href="#top"><img src="logo.png?v=11" alt="" />Monetra</a>
-    <nav class="links"><a href="#features">Funciones</a><a href="#how">Cómo funciona</a><a href="#ai">Asesor IA</a><a href="#home">Hogar</a><a href="#downloads">Descargas</a><a href="#faq">Preguntas</a></nav>
+    <a class="logo" href="#top"><img src="logo.png?v=12" alt="" />Monetra</a>
+    <nav class="links"><a href="#features">Funciones</a><a href="#how">Cómo funciona</a><a href="#ai">Asesor IA</a><a href="#home">Hogar</a><a href="#plans" data-en="Plans" data-fr="Forfaits">Planes</a><a href="#downloads">Descargas</a><a href="#faq">Preguntas</a></nav>
     <div class="lang-switch" data-lang-switch></div>
     <a href="app.html" data-track="click_login" class="btn line sm hide-xs">Iniciar sesión</a>
     <a href="app.html#signup" data-track="click_signup" class="btn dark sm">Empezar gratis</a>
@@ -159,6 +161,30 @@
       </div>
     </div></section>
 
+    <section id="plans"><div class="wrap">
+      <div class="center"><h2 data-en="Start free, upgrade when you need more" data-fr="Commencez gratuitement, passez à Pro quand vous voulez">Empieza gratis, pasa a Pro cuando quieras más</h2><p class="sub" data-en="Every new account gets 14 days of Pro, no card needed." data-fr="Chaque nouveau compte reçoit 14 jours de Pro, sans carte.">Cada cuenta nueva recibe 14 días de Pro, sin tarjeta.</p></div>
+      <div class="plans">
+        <div class="plan"><h3 data-en="Free" data-fr="Gratuit">Gratis</h3><div class="price">US$0</div><ul>
+          <li data-en="Unlimited transactions and backup" data-fr="Transactions et sauvegarde illimitées">Movimientos y respaldo ilimitados</li>
+          <li data-en="Up to 12 of your own categories" data-fr="Jusqu'à 12 catégories personnelles">Hasta 12 categorías propias</li>
+          <li data-en="Analysis chart: current month and 3 months" data-fr="Graphique d'analyse : mois courant et 3 mois">Gráfico de análisis: mes actual y 3 meses</li>
+          <li data-en="AI advisor: 3 queries per month" data-fr="Conseiller IA : 3 requêtes par mois">Asesor IA: 3 consultas al mes</li>
+          <li data-en="Receipt scanning: 3 per month" data-fr="Scan de reçus : 3 par mois">Escaneo de boletas: 3 al mes</li>
+          <li class="no" data-en="Shared household" data-fr="Foyer partagé">Hogar compartido</li>
+        </ul><a class="btn out" href="app.html" data-en="Create free account" data-fr="Créer un compte gratuit">Crear cuenta gratis</a></div>
+        <div class="plan pro"><span class="tag">PRO</span><h3>Pro</h3><div class="price">US$5 <small data-en="/ month" data-fr="/ mois">/ mes</small></div><ul>
+          <li data-en="Everything in Free" data-fr="Tout ce qui est dans Gratuit">Todo lo del plan Gratis</li>
+          <li data-en="Unlimited categories" data-fr="Catégories illimitées">Categorías ilimitadas</li>
+          <li data-en="Full history: 6 and 12 months, year and all views" data-fr="Historique complet : 6 et 12 mois, année et toutes les vues">Historial completo: 6 y 12 meses, año y todas las vistas</li>
+          <li data-en="AI advisor with no monthly limit" data-fr="Conseiller IA sans limite mensuelle">Asesor IA sin límite mensual</li>
+          <li data-en="Receipt scanning: up to 100 per month" data-fr="Scan de reçus : jusqu'à 100 par mois">Escaneo de boletas: hasta 100 al mes</li>
+          <li data-en="Shared household for your partner or family" data-fr="Foyer partagé avec votre conjoint ou famille">Hogar compartido con tu pareja o familia</li>
+          <li data-en="Multiple currencies with automatic conversion" data-fr="Plusieurs devises avec conversion automatique">Varias monedas con conversión automática</li>
+        </ul><a class="btn dark" href="app.html" data-en="Try Pro free for 14 days" data-fr="Essayer Pro 14 jours gratuitement">Probar Pro 14 días gratis</a></div>
+      </div>
+      <p class="plans-note" data-en="Prices in US dollars." data-fr="Prix en dollars américains.">Precios en dólares estadounidenses.</p>
+    </div></section>
+
     <section id="downloads"><div class="wrap">
       <div class="center"><h2 data-en="Free guides to download" data-fr="Guides gratuits à télécharger">Guías gratuitas para descargar</h2><p class="sub" data-en="Learn what Monetra offers and how to get the most out of your dashboard." data-fr="Découvrez ce que Monetra offre et comment tirer le meilleur de votre tableau de bord.">Conoce lo que ofrece Monetra y cómo sacarle el máximo a tu panel.</p></div>
       <div class="grid3" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:30px">
@@ -179,14 +205,14 @@
   </main>
 
   <footer><div class="wrap">
-    <a class="logo" href="#top"><img src="logo.png?v=11" alt="" />Monetra</a>
+    <a class="logo" href="#top"><img src="logo.png?v=12" alt="" />Monetra</a>
     <span>© 2026 Monetra. Todos los derechos reservados.</span>
     <nav><a href="app.html">Iniciar sesión</a><a href="app.html#signup">Crear cuenta</a></nav>
   </div></footer>
 
-  <script src="i18n.js?v=11"></script>
-  <script src="config.js?v=11"></script>
-  <script src="track.js?v=11"></script>
+  <script src="i18n.js?v=12"></script>
+  <script src="config.js?v=12"></script>
+  <script src="track.js?v=12"></script>
   <script>
     // Los PDFs se descargan en el idioma elegido (es / en / fr)
     (function () {

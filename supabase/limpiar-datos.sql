@@ -26,6 +26,7 @@ begin
   delete from public.household_members;
   delete from public.households;
   delete from public.ai_usage;
+  delete from public.scan_usage;
   delete from public.page_events;
 
   -- 2) Cuentas de usuario (borra en cascada perfiles, permisos de admin e identidades de los demás)
