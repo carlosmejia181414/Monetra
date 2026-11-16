@@ -16,10 +16,11 @@
   <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" /><noscript><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" /></noscript>
-  <link rel="stylesheet" href="styles.css?v=15" />
-  <link rel="stylesheet" href="theme.css?v=15" />
-  <script src="vendor/chart.umd.min.js?v=15"></script>
-  <script src="theme.js?v=15"></script>
+  <link rel="stylesheet" href="styles.css?v=18" />
+  <link rel="stylesheet" href="theme.css?v=18" />
+  <script src="safe.js?v=18"></script>
+  <script src="vendor/chart.umd.min.js?v=18"></script>
+  <script src="theme.js?v=18"></script>
 </head>
 <body class="locked">
   <!-- Pantalla de carga: logo, nombre, celular y olas -->
@@ -60,7 +61,7 @@
       <path class="sp-w" d="M0 800C230 720 500 750 760 810S1200 870 1440 760V900H0Z" fill="#ffb25a" opacity=".9"/>
       <path class="sp-w" d="M0 840C260 775 520 805 780 850S1220 885 1440 815V900H0Z" fill="#2a0f3a"/>
     </svg>
-    <div class="sp-brand"><img src="logo.png?v=15" alt=""><b>Monetra</b></div>
+    <div class="sp-brand"><img src="logo.png?v=18" alt=""><b>Monetra</b></div>
     <div class="sp-stage">
       <svg class="sp-blob" viewBox="0 0 470 520" aria-hidden="true"><defs><linearGradient id="spb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe27a"/><stop offset="1" stop-color="#ff9a52"/></linearGradient></defs><path d="M120 70C190-10 330 20 350 120S320 240 350 320C385 410 320 500 210 500S30 450 50 340 20 160 120 70Z" fill="url(#spb)"/></svg>
       <div class="sp-phone">
@@ -122,7 +123,7 @@
     <form id="loginForm" class="login-card">
       <a href="index.html" id="loginBack" class="login-back">← Inicio</a>
       <div class="lang-switch" data-lang-switch></div>
-      <img class="login-logo" src="logo.png?v=15" alt="Monetra" />
+      <img class="login-logo" src="logo.png?v=18" alt="Monetra" />
       <h2>Monetra</h2>
       <div id="authTabs" class="auth-tabs">
         <button type="button" data-mode="login" class="tab active">Iniciar sesión</button>
@@ -146,13 +147,13 @@
   </div>
 
   <header id="mobTop" class="mob-only">
-    <img src="logo.png?v=15" alt="" /><b>Monetra</b>
+    <img src="logo.png?v=18" alt="" /><b>Monetra</b>
     <span id="mobPro" class="pro-tag hidden">PRO</span>
-    <button type="button" id="mobAvatar" class="avatar" aria-label="Más"></button>
+    <button type="button" id="mobAvatar" class="avatar" title="Más"></button>
   </header>
   <aside class="sidebar">
     <div class="brand">
-      <img class="brand-logo" src="logo.png?v=15" alt="" />
+      <img class="brand-logo" src="logo.png?v=18" alt="" />
       <div>
         <h1>Monetra</h1>
         <p>Finanzas personales</p>
@@ -246,7 +247,7 @@
             <button type="button" id="inlineCatCancel" class="secondary">Cancelar</button>
             <p class="kind-note" id="inlineCatKind"></p>
           </div>
-          <label>Descripción <input type="text" id="description" placeholder="Ej: renta, supermercado, internet" /></label>
+          <label>Descripción <input type="text" id="description" maxlength="300" placeholder="Ej: renta, supermercado, internet" /></label>
           <div class="form-actions">
             <button type="submit" id="submitBtn">Agregar</button>
             <button type="button" id="cancelEditBtn" class="secondary hidden">Cancelar edición</button>
@@ -262,7 +263,7 @@
 
         <div class="card">
           <h3>Detalle del mes</h3>
-          <div class="table-wrapper">
+          <div class="table-wrapper" tabindex="0">
             <table>
               <thead><tr><th>Monto</th><th>Categoría</th><th>Descripción</th><th>Tipo</th><th>Acción</th></tr></thead>
               <tbody id="monthlyDetailTable"></tbody>
@@ -273,7 +274,7 @@
 
       <div class="card">
         <h3>Movimientos del mes</h3>
-        <div class="table-wrapper">
+        <div class="table-wrapper" tabindex="0">
           <table>
             <thead><tr><th>Fecha</th><th>Tipo</th><th>Categoría</th><th>Descripción</th><th>Monto</th><th>Acción</th></tr></thead>
             <tbody id="transactionTable"></tbody>
@@ -287,7 +288,7 @@
         <h3>Administrar categorías</h3>
         <form id="categoryForm">
           <div class="grid category-form-grid">
-            <label>Nombre <input type="text" id="categoryName" required /></label>
+            <label>Nombre <input type="text" id="categoryName" maxlength="60" required /></label>
             <label>Tipo
               <select id="categoryKind" required>
                 <option value="income">Ingreso</option>
@@ -305,7 +306,7 @@
 
       <div class="card">
         <h3>Lista de categorías</h3>
-        <div class="table-wrapper">
+        <div class="table-wrapper" tabindex="0">
           <table>
             <thead><tr><th>Categoría</th><th>Tipo</th><th>Uso</th><th>Acción</th></tr></thead>
             <tbody id="categoriesTable"></tbody>
@@ -368,7 +369,7 @@
 
       <div class="card">
         <h3>Datos del gráfico</h3>
-        <div class="table-wrapper">
+        <div class="table-wrapper" tabindex="0">
           <table>
             <thead><tr id="exHead"></tr></thead>
             <tbody id="exTable"></tbody>
@@ -424,6 +425,21 @@
 
     <section id="analyticsSection" class="page-section">
       <div class="analytics-grid">
+        <div class="card wide-card an-top">
+          <div class="an-head">
+            <div><h3>¿Cómo voy?</h3><p class="muted">Termina en el mes y año elegidos arriba en Filtros.</p></div>
+            <div class="an-chips" id="anRange" role="group" aria-label="Periodo">
+              <button type="button" data-n="3">3 meses</button>
+              <button type="button" data-n="6" class="on">6 meses</button>
+              <button type="button" data-n="12">12 meses <span class="pro-tag">PRO</span></button>
+            </div>
+          </div>
+          <div id="anKpis" class="an-kpis"></div>
+        </div>
+        <div class="card wide-card"><h3>Tendencia de ahorro</h3><p class="muted">Tasa de ahorro mensual frente a la meta del 20%.</p><div class="chart-box"><canvas id="anTrend"></canvas></div></div>
+        <div class="card"><h3>Regla 50/30/20: real vs ideal</h3><div id="anRule"></div></div>
+        <div class="card"><h3>Fijo vs variable</h3><div class="chart-box"><canvas id="anDonut"></canvas></div></div>
+        <div class="card wide-card"><h3>Dónde se va tu dinero</h3><p class="muted">Categorías de gasto con más peso en el mes elegido.</p><div id="anTop"></div></div>
         <div class="card wide-card">
           <h3>Panel financiero ejecutivo</h3>
           <div id="analyticsCards" class="analytics-cards expanded"></div>
@@ -431,7 +447,7 @@
 
         <div class="card">
           <h3>Top categorías del mes</h3>
-          <div class="table-wrapper">
+          <div class="table-wrapper" tabindex="0">
             <table>
               <thead><tr><th>Categoría</th><th>Tipo</th><th>Monto</th><th>% ingreso</th><th>% gasto</th></tr></thead>
               <tbody id="analyticsCategoryTable"></tbody>
@@ -441,7 +457,7 @@
 
         <div class="card">
           <h3>Regla 50/30/20</h3>
-          <div class="table-wrapper">
+          <div class="table-wrapper" tabindex="0">
             <table>
               <thead><tr><th>Grupo</th><th>Monto</th><th>% ingreso</th><th>Meta</th><th>Estado</th></tr></thead>
               <tbody id="ruleTable"></tbody>
@@ -451,7 +467,7 @@
 
         <div class="card">
           <h3>Comparativo vs mes anterior</h3>
-          <div class="table-wrapper">
+          <div class="table-wrapper" tabindex="0">
             <table>
               <thead><tr><th>Métrica</th><th>Actual</th><th>Anterior</th><th>Diferencia</th><th>% cambio</th></tr></thead>
               <tbody id="comparisonTable"></tbody>
@@ -461,7 +477,7 @@
 
         <div class="card">
           <h3>Promedios anuales</h3>
-          <div class="table-wrapper">
+          <div class="table-wrapper" tabindex="0">
             <table>
               <thead><tr><th>Métrica</th><th>Promedio mensual</th><th>Total anual</th></tr></thead>
               <tbody id="averageTable"></tbody>
@@ -471,7 +487,7 @@
 
         <div class="card">
           <h3>Proyección anual</h3>
-          <div class="table-wrapper">
+          <div class="table-wrapper" tabindex="0">
             <table>
               <thead><tr><th>Métrica</th><th>Proyección 12 meses</th><th>Comentario</th></tr></thead>
               <tbody id="projectionTable"></tbody>
@@ -482,7 +498,7 @@
         <div class="card">
           <h3>Pareto de gastos 80/20</h3>
           <p class="muted">Detecta qué categorías concentran la mayor parte de tus gastos.</p>
-          <div class="table-wrapper">
+          <div class="table-wrapper" tabindex="0">
             <table>
               <thead><tr><th>#</th><th>Categoría</th><th>Monto</th><th>% gasto</th><th>% acumulado</th><th>Prioridad</th></tr></thead>
               <tbody id="paretoTable"></tbody>
@@ -492,7 +508,7 @@
 
         <div class="card">
           <h3>Variación por categoría vs mes anterior</h3>
-          <div class="table-wrapper">
+          <div class="table-wrapper" tabindex="0">
             <table>
               <thead><tr><th>Categoría</th><th>Actual</th><th>Anterior</th><th>Diferencia</th><th>% cambio</th></tr></thead>
               <tbody id="categoryVarianceTable"></tbody>
@@ -503,7 +519,7 @@
         <div class="card">
           <h3>Compromisos recurrentes</h3>
           <p class="muted">Pagos fijos que se repiten cada mes y afectan tu flujo de caja.</p>
-          <div class="table-wrapper">
+          <div class="table-wrapper" tabindex="0">
             <table>
               <thead><tr><th>Día</th><th>Categoría</th><th>Descripción</th><th>Monto</th></tr></thead>
               <tbody id="recurringTable"></tbody>
@@ -513,7 +529,7 @@
 
         <div class="card">
           <h3>Análisis de gastos variables</h3>
-          <div class="table-wrapper">
+          <div class="table-wrapper" tabindex="0">
             <table>
               <thead><tr><th>Métrica</th><th>Valor</th><th>Lectura</th></tr></thead>
               <tbody id="variableAnalysisTable"></tbody>
@@ -535,7 +551,7 @@
         <div class="card">
           <h3>Score financiero</h3>
           <div id="financialScoreBox" class="score-box"></div>
-          <div class="table-wrapper">
+          <div class="table-wrapper" tabindex="0">
             <table>
               <thead><tr><th>Factor</th><th>Resultado</th><th>Impacto</th></tr></thead>
               <tbody id="scoreBreakdownTable"></tbody>
@@ -546,7 +562,7 @@
         <div class="card">
           <h3>Calidad de datos</h3>
           <p class="muted">Ayuda a detectar registros incompletos o poco útiles para análisis.</p>
-          <div class="table-wrapper">
+          <div class="table-wrapper" tabindex="0">
             <table>
               <thead><tr><th>Revisión</th><th>Resultado</th><th>Sugerencia</th></tr></thead>
               <tbody id="dataQualityTable"></tbody>
@@ -557,7 +573,7 @@
         <div class="card">
           <h3>Plan de optimización</h3>
           <p class="muted">Reducción sugerida para acercarte a una meta de ahorro del 20%.</p>
-          <div class="table-wrapper">
+          <div class="table-wrapper" tabindex="0">
             <table>
               <thead><tr><th>Categoría</th><th>Gasto actual</th><th>Reducción sugerida</th><th>Nuevo objetivo</th></tr></thead>
               <tbody id="optimizationTable"></tbody>
@@ -612,16 +628,16 @@
     <button type="button" class="ms-row ms-out" id="msLogout"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg><span>Cerrar sesión</span></button>
   </div>
 
-  <script src="mobile.js?v=15"></script>
-  <script src="i18n.js?v=15"></script>
-  <script src="vendor/supabase.js?v=15"></script>
-  <script src="config.js?v=15"></script>
-  <script src="data.js?v=15"></script>
-  <script src="fx.js?v=15"></script>
-  <script src="plan.js?v=15"></script>
-  <script src="app.js?v=15"></script>
-  <script src="profile.js?v=15"></script>
-  <script src="advisor.js?v=15"></script>
-  <script src="track.js?v=15"></script>
+  <script src="mobile.js?v=18"></script>
+  <script src="i18n.js?v=18"></script>
+  <script src="vendor/supabase.js?v=18"></script>
+  <script src="config.js?v=18"></script>
+  <script src="data.js?v=18"></script>
+  <script src="fx.js?v=18"></script>
+  <script src="plan.js?v=18"></script>
+  <script src="app.js?v=18"></script>
+  <script src="profile.js?v=18"></script>
+  <script src="advisor.js?v=18"></script>
+  <script src="track.js?v=18"></script>
 </body>
 </html>

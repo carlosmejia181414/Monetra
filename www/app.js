@@ -29,6 +29,7 @@ const withTimeout = (promise, label, ms = 15000) => Promise.race([promise, new P
     }
   });
 })();
+const H = v => String(v == null ? "" : v).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch])); // escapa texto del usuario antes de ponerlo en HTML
 const $ = id => document.getElementById(id) || document.createElement("div"); // tolerante si el HTML en caché es antiguo
 
 const pageTitle = document.getElementById("pageTitle");
@@ -130,7 +131,8 @@ function pct(value) {
 }
 
 function getCurrentDateValue() {
-  return new Date().toISOString().split("T")[0];
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); // fecha LOCAL (no UTC)
 }
 
 function getDateParts(dateString) {
@@ -534,8 +536,8 @@ function renderMonthlyDetailTable() {
 
       row.innerHTML = `
         <td>${formatCurrency(item.amount)}</td>
-        <td>${item.category}</td>
-        <td>${item.description}</td>
+        <td>${H(item.category)}</td>
+        <td>${H(item.description)}</td>
         <td>${getTypeLabel(item.type)}</td>
         <td>${action}</td>
       `;
@@ -575,8 +577,8 @@ function renderTransactionTable() {
       row.innerHTML = `
         <td>${item.date}</td>
         <td>${getTypeLabel(item.type)}</td>
-        <td>${getCategoryName(item.categoryId)}</td>
-        <td>${description}</td>
+        <td>${H(getCategoryName(item.categoryId))}</td>
+        <td>${H(description)}</td>
         <td>${formatCurrency(item.amount)}</td>
         <td>${actions}</td>
       `;
@@ -600,7 +602,7 @@ function renderCategoriesTable() {
       const row = document.createElement("tr");
 
       row.innerHTML = `
-        <td>${category.name}</td>
+        <td>${H(category.name)}</td>
         <td>${getTypeLabel(category.kind)}</td>
         <td>${usage} movimiento(s)</td>
         <td>
@@ -706,6 +708,8 @@ function renderAnalytics() {
   const minVariable = variableTransactions.length ? Math.min(...variableTransactions.map(item => item.amount)) : 0;
   const dailyBurn = totals.expenses / 30;
 
+  try { renderAnalyticsCharts(); } catch (e) { console.warn(e); }
+
   analyticsCards.innerHTML = `
     <div class="analytics-card"><h4>Tasa de ahorro</h4><p>${pct(savingsRate)}</p><small>Ahorro / ingresos</small></div>
     <div class="analytics-card"><h4>Tasa de gasto</h4><p>${pct(expenseRate)}</p><small>Gastos / ingresos</small></div>
@@ -713,7 +717,7 @@ function renderAnalytics() {
     <div class="analytics-card"><h4>Variables sobre gastos</h4><p>${pct(variableRate)}</p><small>Gastos ajustables</small></div>
     <div class="analytics-card"><h4>Gasto diario estimado</h4><p>${formatCurrency(dailyBurn)}</p><small>Gasto mensual / 30</small></div>
     <div class="analytics-card"><h4>Ahorro proyectado</h4><p>${formatCurrency(avgSavings * 12)}</p><small>Promedio anualizado</small></div>
-    <div class="analytics-card"><h4>Categoría dominante</h4><p>${top ? top.category : "-"}</p><small>${top ? formatCurrency(top.amount) : "Sin datos"}</small></div>
+    <div class="analytics-card"><h4>Categoría dominante</h4><p>${H(top ? top.category : "-")}</p><small>${top ? formatCurrency(top.amount) : "Sin datos"}</small></div>
     <div class="analytics-card"><h4>Movimientos del mes</h4><p>${transactions.length}</p><small>${incomeTransactions.length} ingresos, ${fixedTransactions.length} fijos, ${variableTransactions.length} variables</small></div>
   `;
 
@@ -727,7 +731,7 @@ function renderAnalytics() {
       const percentExpense = totals.expenses > 0 ? (item.amount / totals.expenses) * 100 : 0;
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td>${item.category}</td>
+        <td>${H(item.category)}</td>
         <td>${getTypeLabel(item.type)}</td>
         <td>${formatCurrency(item.amount)}</td>
         <td>${pct(percentIncome)}</td>
@@ -749,7 +753,7 @@ function renderAnalytics() {
       : (item.value >= item.limit ? "OK" : "Bajo");
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td>${item.name}</td>
+      <td>${H(item.name)}</td>
       <td>${formatCurrency(item.amount)}</td>
       <td>${pct(item.value)}</td>
       <td>${item.goal}</td>
@@ -824,7 +828,7 @@ function renderAnalytics() {
       const row = document.createElement("tr");
       row.innerHTML = `
         <td>${index + 1}</td>
-        <td>${item.category}</td>
+        <td>${H(item.category)}</td>
         <td>${formatCurrency(item.amount)}</td>
         <td>${pct(share)}</td>
         <td>${pct(cumulative)}</td>
@@ -847,7 +851,7 @@ function renderAnalytics() {
       const change = old !== 0 ? diff / old * 100 : 0;
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td>${category}</td>
+        <td>${H(category)}</td>
         <td>${formatCurrency(current)}</td>
         <td>${formatCurrency(old)}</td>
         <td class="${diff > 0 ? "warning" : diff < 0 ? "good" : ""}">${formatCurrency(diff)}</td>
@@ -870,8 +874,8 @@ function renderAnalytics() {
       const row = document.createElement("tr");
       row.innerHTML = `
         <td>${getDateParts(item.date).day}</td>
-        <td>${getCategoryName(item.categoryId)}</td>
-        <td>${item.description || "-"}</td>
+        <td>${H(getCategoryName(item.categoryId))}</td>
+        <td>${H(item.description || "-")}</td>
         <td>${formatCurrency(item.amount)}</td>
       `;
       recurringTable.appendChild(row);
@@ -919,7 +923,7 @@ function renderAnalytics() {
       const total = monthlyAmounts.reduce((sum, value) => sum + value, 0);
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td>${category.name}</td>
+        <td>${H(category.name)}</td>
         ${monthlyAmounts.map(value => `<td>${value ? formatCurrency(value) : "-"}</td>`).join("")}
         <td><strong>${formatCurrency(total)}</strong></td>
       `;
@@ -958,7 +962,7 @@ function renderAnalytics() {
   } else {
     scoreFactors.forEach(item => {
       const row = document.createElement("tr");
-      row.innerHTML = `<td>${item.name}</td><td>${item.result}</td><td>${item.impact}</td>`;
+      row.innerHTML = `<td>${H(item.name)}</td><td>${H(item.result)}</td><td>${H(item.impact)}</td>`;
       scoreBreakdownTable.appendChild(row);
     });
   }
@@ -1001,7 +1005,7 @@ function renderAnalytics() {
       const safeCut = Math.min(item.amount * 0.25, proportionalCut);
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td>${item.category}</td>
+        <td>${H(item.category)}</td>
         <td>${formatCurrency(item.amount)}</td>
         <td>${formatCurrency(safeCut)}</td>
         <td>${formatCurrency(Math.max(0, item.amount - safeCut))}</td>
@@ -1050,9 +1054,9 @@ function renderAnalytics() {
     insights.push(`Tu mayor categoría representa ${pct(totals.expenses > 0 ? top.amount / totals.expenses * 100 : 0)} de tus gastos del mes.`);
   }
 
-  alertsList.innerHTML = (alerts.length ? alerts : ["Sin alertas críticas para este mes."]).map(item => `<li>${item}</li>`).join("");
-  suggestionsList.innerHTML = (suggestions.length ? suggestions : ["Agrega más movimientos para generar sugerencias más precisas."]).map(item => `<li>${item}</li>`).join("");
-  insightsList.innerHTML = insights.map(item => `<li>${item}</li>`).join("");
+  alertsList.innerHTML = (alerts.length ? alerts : ["Sin alertas críticas para este mes."]).map(item => `<li>${H(item)}</li>`).join("");
+  suggestionsList.innerHTML = (suggestions.length ? suggestions : ["Agrega más movimientos para generar sugerencias más precisas."]).map(item => `<li>${H(item)}</li>`).join("");
+  insightsList.innerHTML = insights.map(item => `<li>${H(item)}</li>`).join("");
 }
 
 
@@ -1105,7 +1109,7 @@ function renderCategoryHeatmap() {
         matrix.length === 0
           ? `<div class="heatmap-label">Sin categorías</div>${monthNames.map(() => `<div class="heatmap-cell heat-0">-</div>`).join("")}`
           : matrix.map(row => `
-              <div class="heatmap-label">${row.category}</div>
+              <div class="heatmap-label">${H(row.category)}</div>
               ${row.values.map(value => `<div class="heatmap-cell ${heatClass(value)}">${value ? formatCurrency(value) : "-"}</div>`).join("")}
             `).join("")
       }
@@ -1282,7 +1286,7 @@ function renderExplorer() {
   if (heat) renderCategoryHeatmap();
 
   // tabla de datos
-  $("exHead").innerHTML = built.head.map(h => `<th>${h}</th>`).join("");
+  $("exHead").innerHTML = built.head.map(h => `<th>${H(h)}</th>`).join("");
   $("exTable").innerHTML = built.rows.length
     ? built.rows.map(row => `<tr>${row.map((c, i) => `<td${i === 0 ? "" : ' class="num"'}>${String(c).replace(/[&<>]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[ch]))}</td>`).join("")}</tr>`).join("")
     : `<tr><td colspan="${built.head.length}">${T("Aún no hay movimientos en este periodo.")}</td></tr>`;
@@ -1415,8 +1419,24 @@ function cancelEditingTransaction() {
   renderCurrencySelect();
 }
 
+let savingTx = false;
 async function addOrUpdateTransaction(event) {
   event.preventDefault();
+  if (savingTx) return; // evita guardar dos veces con doble clic / doble toque
+  savingTx = true;
+  submitBtn.disabled = true;
+  try {
+    await addOrUpdateTransactionInner();
+  } catch (error) {
+    if (error && error.code === "limit_categories") MonetraPlan.upsell("categories");
+    else alert(T("No se pudo guardar:") + " " + ((error && error.message) || String(error)));
+  } finally {
+    savingTx = false;
+    submitBtn.disabled = false;
+  }
+}
+
+async function addOrUpdateTransactionInner() {
 
   if (categorySelect.value === "__new__") {
     alert(T("Escribe el nombre y pulsa «Crear categoría», o elige una existente."));
@@ -1628,10 +1648,17 @@ async function exportJSON() {
 
 async function importJSONFile(file) {
   if (!file) return;
+  let data;
+  try {
+    data = JSON.parse(await file.text()); // se revisa el archivo ANTES de preguntar
+    if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error("el archivo no tiene el formato de un respaldo de Monetra");
+  } catch (error) {
+    alert(T("No se pudo importar: " + (error.message || error)));
+    return;
+  }
   if (!confirm(T("Se agregarán a la base de datos los movimientos y categorías del respaldo. No se borra nada. ¿Deseas continuar?"))) return;
 
   try {
-    const data = JSON.parse(await file.text());
     const result = await Data.importDB(data);
     await refreshData();
     setupYearFilterIfNeeded();
@@ -1649,6 +1676,7 @@ function showSection(sectionId) {
   navButtons.forEach(button => button.classList.remove("active"));
 
   document.getElementById(sectionId).classList.add("active-section");
+  document.body.setAttribute("data-page", sectionId);
   document.querySelector(`[data-section="${sectionId}"]`).classList.add("active");
 
   const titles = {
@@ -1742,7 +1770,11 @@ importFile.addEventListener("change", () => {
 });
 
 let resizeTimer;
+let lastW = window.innerWidth;
 window.addEventListener("resize", () => {
+  // En el celular, al abrir el teclado solo cambia el alto: no hay que redibujar (eso cerraba el panel "+ Nueva").
+  if (window.innerWidth === lastW) return;
+  lastW = window.innerWidth;
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => refreshDashboard(), 250);
 });
@@ -2165,3 +2197,85 @@ logoutBtn.addEventListener("click", async () => {
 });
 
 initApp();
+
+
+// ===== Analytics con gráficos (v9.1) =====
+let anRange = 6, anTrendChart = null, anDonutChart = null;
+function anSpark(values, color) {
+  const w = 120, h = 30, max = Math.max(...values), min = Math.min(...values), span = (max - min) || 1;
+  const pts = values.map((v, i) => `${(i / Math.max(values.length - 1, 1) * w).toFixed(1)},${(h - 3 - (v - min) / span * (h - 8)).toFixed(1)}`).join(" ");
+  return `<svg class="an-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="${color}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" points="${pts}"/></svg>`;
+}
+function renderAnalyticsCharts() {
+  if (!$("anKpis").dataset || !document.getElementById("anKpis") || !window.Chart) return;
+  const y = Number(yearFilter.value), m = Number(monthFilter.value);
+  const series = [];
+  for (let i = anRange - 1; i >= 0; i--) {
+    let mm = m - i, yy = y;
+    while (mm < 0) { mm += 12; yy -= 1; }
+    const t = calculateTotals(getTransactionsForMonth(yy, mm));
+    series.push({ label: (monthNames[mm] || "").slice(0, 3), ...t, rate: t.income > 0 ? t.savings / t.income * 100 : 0 });
+  }
+  const cur = series[series.length - 1], prev = series[series.length - 2] || null;
+  const colors = document.documentElement.getAttribute("data-theme") === "light" ? ["#6c1f7c", "#1f9d57", "#e0a21b"] : ["#e8456b", "#ff7a5c", "#ffcf4a"];
+  const kpi = (name, key, goodUp, fmt, color) => {
+    const vals = series.map(s => s[key]);
+    let delta = "";
+    if (prev && prev[key] !== 0) {
+      const ch = (cur[key] - prev[key]) / Math.abs(prev[key]) * 100;
+      const good = goodUp ? ch >= 0 : ch <= 0;
+      delta = `<div class="an-delta ${good ? "good" : "danger-text"}">${ch >= 0 ? "▲" : "▼"} ${Math.abs(ch).toFixed(1)}% ${T("vs mes anterior")}</div>`;
+    }
+    return `<div class="an-kpi"><span class="an-k">${T(name)}</span><b>${fmt(cur[key])}</b>${delta}${anSpark(vals, color)}</div>`;
+  };
+  document.getElementById("anKpis").innerHTML =
+    kpi("Ingresos", "income", true, formatCurrency, "#13a36b") +
+    kpi("Gastos", "expenses", false, formatCurrency, "#e5484d") +
+    kpi("Ahorro", "savings", true, formatCurrency, colors[0]) +
+    kpi("Tasa de ahorro", "rate", true, v => pct(v), "#2f7de1");
+
+  // Tendencia de ahorro
+  const tc = document.getElementById("anTrend");
+  if (anTrendChart) anTrendChart.destroy();
+  anTrendChart = new Chart(tc, {
+    type: "line",
+    data: { labels: series.map(s => s.label), datasets: [
+      { label: T("Tasa de ahorro"), data: series.map(s => +s.rate.toFixed(1)), borderColor: colors[0], backgroundColor: colors[0] + "33", fill: true, tension: .3, pointRadius: 4 },
+      { label: T("Meta 20%"), data: series.map(() => 20), borderColor: "#e5484d", borderDash: [6, 5], pointRadius: 0, fill: false }
+    ] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "bottom" }, tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.raw}%` } } }, scales: { y: { ticks: { callback: v => v + "%" } } } }
+  });
+
+  // Regla 50/30/20 (real vs ideal)
+  const inc = cur.income;
+  const real = [["Necesidades / fijos", inc > 0 ? cur.fixed / inc * 100 : 0, "#1d5fc4", 50, "#cfe0fb"], ["Variables", inc > 0 ? cur.variable / inc * 100 : 0, "#b45309", 30, "#fde3b4"], ["Ahorro", Math.max(cur.rate, 0), "#0f7a4f", 20, "#c4ecd9"]];
+  const bar = (arr, dim) => `<div class="an-stack${dim ? " dim" : ""}">${arr.map(r => `<div style="width:${Math.max(r[dim ? 3 : 1], 0)}%;background:${dim ? r[4] : r[2]};color:${dim ? "#2a0f3a" : "#fff"}" title="${T(r[0])}">${r[dim ? 3 : 1] >= 9 ? Math.round(r[dim ? 3 : 1]) + "%" : ""}</div>`).join("")}</div>`;
+  document.getElementById("anRule").innerHTML = inc > 0
+    ? `<p class="an-k">${T("Tu reparto")}</p>${bar(real, false)}<p class="an-k">${T("Ideal")}</p>${bar(real, true)}<ul class="an-legend">${real.map(r => `<li><i style="background:${r[2]}"></i>${T(r[0])}: ${r[1].toFixed(0)}% <span class="muted">(${T("ideal")} ${r[3]}%)</span></li>`).join("")}</ul>`
+    : `<p class="muted">${T("Sin ingresos en este mes para calcular.")}</p>`;
+
+  // Fijo vs variable
+  const dc = document.getElementById("anDonut");
+  if (anDonutChart) anDonutChart.destroy();
+  anDonutChart = new Chart(dc, {
+    type: "doughnut",
+    data: { labels: [T("Gasto fijo"), T("Gasto variable")], datasets: [{ data: [Math.max(cur.fixed, 0), Math.max(cur.variable, 0)], backgroundColor: [colors[0], colors[2]] }] },
+    options: Object.assign(chartOptions(), { cutout: "62%" })
+  });
+
+  // Top categorías
+  const grouped = groupByCategory(getFilteredTransactions(), false).slice(0, 6);
+  const maxA = grouped.length ? grouped[0].amount : 1;
+  document.getElementById("anTop").innerHTML = grouped.length
+    ? grouped.map(g => `<div class="an-bar"><span class="an-n">${H(g.category)}</span><div class="an-track"><i style="width:${(g.amount / maxA * 100).toFixed(0)}%"></i></div><span class="an-v">${formatCurrency(g.amount)}</span></div>`).join("")
+    : `<p class="muted">${T("No hay gastos para analizar.")}</p>`;
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("#anRange button");
+  if (!b) return;
+  const n = Number(b.dataset.n);
+  if (n > 6 && !MonetraPlan.isPro()) { MonetraPlan.upsell("history"); return; }
+  anRange = n;
+  document.querySelectorAll("#anRange button").forEach(x => x.classList.toggle("on", x === b));
+  renderAnalytics();
+});

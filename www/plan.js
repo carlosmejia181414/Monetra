@@ -65,7 +65,7 @@
     if (modal) return modal;
     modal = document.createElement("div");
     modal.className = "modal-back hidden";
-    modal.innerHTML = '<div class="modal" role="dialog" aria-modal="true"><button type="button" class="modal-x" aria-label="Cerrar">×</button><div id="modalBody"></div></div>';
+    modal.innerHTML = '<div class="modal" role="dialog" aria-modal="true"><button type="button" class="modal-x" aria-label="Cerrar"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button><div id="modalBody"></div></div>';
     document.body.appendChild(modal);
     modal.addEventListener("click", e => { if (e.target === modal || e.target.closest(".modal-x") || e.target.closest("[data-close]")) close(); if (e.target.closest("[data-open-plans]")) open(); });
     document.addEventListener("keydown", e => { if (e.key === "Escape") close(); });
@@ -87,12 +87,17 @@
 
   function open() {
     const pro = isPro();
-    const rows = ROWS.map(r => `<tr><td>${esc(T(r[0]))}</td><td>${esc(T(r[1]))}</td><td><b>${esc(T(r[2]))}</b></td></tr>`).join("");
+    const ck = '<svg class="ck" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+    const no = '<svg class="ck no" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12"/></svg>';
+    const list = col => ROWS.map(r => `<li>${r[col] === "—" ? no : ck}<span><b>${esc(T(r[0]))}</b><br>${r[col] === "—" ? esc(T("No incluido")) : esc(T(r[col]))}</span></li>`).join("");
     show(`<h3>${esc(T("Elige tu plan"))}</h3>
-      <p class="muted">${esc(T("Lo básico es gratis para siempre. Pro suma las herramientas que más ahorran tiempo y dinero."))}</p>
-      <div class="table-wrapper"><table class="plan-table"><thead><tr><th></th><th>${esc(T("Gratis"))}<br><small>US$0</small></th><th class="th-pro">Pro<br><small>US$5 / ${esc(T("mes"))}</small></th></tr></thead><tbody>${rows}</tbody></table></div>
+      <p class="muted plan-sub">${esc(T("Lo básico es gratis para siempre. Pro suma las herramientas que más ahorran tiempo y dinero."))}</p>
+      <div class="plan-cards">
+        <div class="plan-col"><div class="pc-name">${esc(T("Gratis"))}</div><div class="pc-price">US$0</div><ul>${list(1)}</ul></div>
+        <div class="plan-col is-pro"><span class="pc-rec">${esc(T("Recomendado"))}</span><div class="pc-name">Pro</div><div class="pc-price">US$5<small>/${esc(T("mes"))}</small></div><ul>${list(2)}</ul></div>
+      </div>
       ${info && info.plan === "pro" ? `<p class="plan-note">${esc(T("Ya tienes Pro"))}${info.pro_until ? " · " + esc(T("hasta")) + " " + esc(fmtDate(info.pro_until)) : ""}.</p>` : upgradeButton()}
-      <button type="button" class="secondary" data-close>${esc(T("Cerrar"))}</button>`);
+      <button type="button" class="secondary plan-close" data-close>${esc(T("Cerrar"))}</button>`);
     return pro;
   }
 
