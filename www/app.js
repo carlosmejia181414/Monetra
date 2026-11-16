@@ -30,6 +30,7 @@ const withTimeout = (promise, label, ms = 15000) => Promise.race([promise, new P
   });
 })();
 const H = v => String(v == null ? "" : v).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch])); // escapa texto del usuario antes de ponerlo en HTML
+const HC = (name, kind) => `<span class="ci" aria-hidden="true">${window.MonetraIcons ? MonetraIcons.cat(name, kind) : ""}</span>${H(name)}`; // categoría con icono automático
 const $ = id => document.getElementById(id) || document.createElement("div"); // tolerante si el HTML en caché es antiguo
 
 const pageTitle = document.getElementById("pageTitle");
@@ -257,7 +258,7 @@ function renderCategoryOptions() {
   categories.forEach(category => {
     const option = document.createElement("option");
     option.value = category.id;
-    option.textContent = category.name;
+    option.textContent = (window.MonetraIcons ? MonetraIcons.cat(category.name, category.kind) + " " : "") + category.name;
     categorySelect.appendChild(option);
   });
 
@@ -536,7 +537,7 @@ function renderMonthlyDetailTable() {
 
       row.innerHTML = `
         <td>${formatCurrency(item.amount)}</td>
-        <td>${H(item.category)}</td>
+        <td>${HC(item.category)}</td>
         <td>${H(item.description)}</td>
         <td>${getTypeLabel(item.type)}</td>
         <td>${action}</td>
@@ -577,7 +578,7 @@ function renderTransactionTable() {
       row.innerHTML = `
         <td>${item.date}</td>
         <td>${getTypeLabel(item.type)}</td>
-        <td>${H(getCategoryName(item.categoryId))}</td>
+        <td>${HC(getCategoryName(item.categoryId))}</td>
         <td>${H(description)}</td>
         <td>${formatCurrency(item.amount)}</td>
         <td>${actions}</td>
@@ -602,7 +603,7 @@ function renderCategoriesTable() {
       const row = document.createElement("tr");
 
       row.innerHTML = `
-        <td>${H(category.name)}</td>
+        <td>${HC(category.name, category.kind)}</td>
         <td>${getTypeLabel(category.kind)}</td>
         <td>${usage} movimiento(s)</td>
         <td>
@@ -731,7 +732,7 @@ function renderAnalytics() {
       const percentExpense = totals.expenses > 0 ? (item.amount / totals.expenses) * 100 : 0;
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td>${H(item.category)}</td>
+        <td>${HC(item.category)}</td>
         <td>${getTypeLabel(item.type)}</td>
         <td>${formatCurrency(item.amount)}</td>
         <td>${pct(percentIncome)}</td>
@@ -828,7 +829,7 @@ function renderAnalytics() {
       const row = document.createElement("tr");
       row.innerHTML = `
         <td>${index + 1}</td>
-        <td>${H(item.category)}</td>
+        <td>${HC(item.category)}</td>
         <td>${formatCurrency(item.amount)}</td>
         <td>${pct(share)}</td>
         <td>${pct(cumulative)}</td>
@@ -851,7 +852,7 @@ function renderAnalytics() {
       const change = old !== 0 ? diff / old * 100 : 0;
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td>${H(category)}</td>
+        <td>${HC(category)}</td>
         <td>${formatCurrency(current)}</td>
         <td>${formatCurrency(old)}</td>
         <td class="${diff > 0 ? "warning" : diff < 0 ? "good" : ""}">${formatCurrency(diff)}</td>
@@ -874,7 +875,7 @@ function renderAnalytics() {
       const row = document.createElement("tr");
       row.innerHTML = `
         <td>${getDateParts(item.date).day}</td>
-        <td>${H(getCategoryName(item.categoryId))}</td>
+        <td>${HC(getCategoryName(item.categoryId))}</td>
         <td>${H(item.description || "-")}</td>
         <td>${formatCurrency(item.amount)}</td>
       `;
@@ -923,7 +924,7 @@ function renderAnalytics() {
       const total = monthlyAmounts.reduce((sum, value) => sum + value, 0);
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td>${H(category.name)}</td>
+        <td>${HC(category.name, category.kind)}</td>
         ${monthlyAmounts.map(value => `<td>${value ? formatCurrency(value) : "-"}</td>`).join("")}
         <td><strong>${formatCurrency(total)}</strong></td>
       `;
@@ -1005,7 +1006,7 @@ function renderAnalytics() {
       const safeCut = Math.min(item.amount * 0.25, proportionalCut);
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td>${H(item.category)}</td>
+        <td>${HC(item.category)}</td>
         <td>${formatCurrency(item.amount)}</td>
         <td>${formatCurrency(safeCut)}</td>
         <td>${formatCurrency(Math.max(0, item.amount - safeCut))}</td>
@@ -1109,7 +1110,7 @@ function renderCategoryHeatmap() {
         matrix.length === 0
           ? `<div class="heatmap-label">Sin categorías</div>${monthNames.map(() => `<div class="heatmap-cell heat-0">-</div>`).join("")}`
           : matrix.map(row => `
-              <div class="heatmap-label">${H(row.category)}</div>
+              <div class="heatmap-label">${HC(row.category)}</div>
               ${row.values.map(value => `<div class="heatmap-cell ${heatClass(value)}">${value ? formatCurrency(value) : "-"}</div>`).join("")}
             `).join("")
       }
@@ -1684,6 +1685,7 @@ function showSection(sectionId) {
     categoriesSection: "Categorías",
     chartsSection: "Gráficos",
     analyticsSection: "Data analytics",
+    goalsSection: "Metas de ahorro",
     advisorSection: "Asesor financiero IA",
     householdSection: "Hogar",
     profileSection: "Mi perfil"
@@ -2267,7 +2269,7 @@ function renderAnalyticsCharts() {
   const grouped = groupByCategory(getFilteredTransactions(), false).slice(0, 6);
   const maxA = grouped.length ? grouped[0].amount : 1;
   document.getElementById("anTop").innerHTML = grouped.length
-    ? grouped.map(g => `<div class="an-bar"><span class="an-n">${H(g.category)}</span><div class="an-track"><i style="width:${(g.amount / maxA * 100).toFixed(0)}%"></i></div><span class="an-v">${formatCurrency(g.amount)}</span></div>`).join("")
+    ? grouped.map(g => `<div class="an-bar"><span class="an-n">${HC(g.category)}</span><div class="an-track"><i style="width:${(g.amount / maxA * 100).toFixed(0)}%"></i></div><span class="an-v">${formatCurrency(g.amount)}</span></div>`).join("")
     : `<p class="muted">${T("No hay gastos para analizar.")}</p>`;
 }
 document.addEventListener("click", e => {

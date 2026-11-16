@@ -30,6 +30,10 @@
     if (/bucket not found/i.test(msg) || (error.code === "PGRST205" && /profiles/.test(msg))) {
       return new Error("Falta ejecutar supabase/perfil.sql en el SQL Editor de Supabase.");
     }
+    if (/limit_goals/.test(msg)) { const e = new Error("Llegaste al límite de metas del plan Gratis."); e.code = "limit_goals"; return e; }
+    if (/\bgoals\b|goal_contributions/.test(msg) && (error.code === "42P01" || error.code === "PGRST205" || error.code === "PGRST200")) {
+      return new Error("Falta ejecutar supabase/v10-metas.sql en el SQL Editor de Supabase.");
+    }
     if (/household_id|households|household_members/.test(msg) || error.code === "42703" || error.code === "42P01" || error.code === "PGRST205") {
       return new Error("La base de datos no está actualizada: ejecuta supabase/hogar.sql en el SQL Editor de Supabase.");
     }
@@ -423,6 +427,57 @@
     await saveProfile({ avatarUrl: null });
   }
 
+  // ---------- Metas de ahorro ----------
+  const goalFromRow = (r, uid) => ({
+    id: r.id, name: r.name, icon: r.icon, target: Number(r.target_amount), targetDate: r.target_date || null,
+    archived: !!r.archived, shared: !!r.household_id, createdAt: r.created_at,
+    contributions: (r.goal_contributions || []).map(c => ({ id: c.id, amount: Number(c.amount), note: c.note || "", date: c.date, mine: c.user_id === uid }))
+      .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
+  });
+
+  async function getGoals() {
+    const sess = await client.auth.getSession();
+    const uid = sess && sess.data && sess.data.session ? sess.data.session.user.id : null;
+    const res = await scoped(client.from("goals").select("*, goal_contributions(id, amount, note, date, user_id)").order("created_at", { ascending: true }));
+    return check(res, "No se pudieron cargar las metas").map(r => goalFromRow(r, uid));
+  }
+
+  async function createGoal(g) {
+    const res = await client.from("goals").insert({
+      household_id: hid(), name: String(g.name || "").trim(), icon: g.icon || "target",
+      target_amount: Number(g.target), target_date: g.targetDate || null
+    }).select("*, goal_contributions(id, amount, note, date, user_id)").single();
+    return goalFromRow(check(res, "No se pudo guardar la meta"), null);
+  }
+
+  async function updateGoal(id, g) {
+    const patch = {};
+    if (g.name != null) patch.name = String(g.name).trim();
+    if (g.icon != null) patch.icon = g.icon;
+    if (g.target != null) patch.target_amount = Number(g.target);
+    if (g.targetDate !== undefined) patch.target_date = g.targetDate || null;
+    if (g.archived != null) patch.archived = !!g.archived;
+    check(await client.from("goals").update(patch).eq("id", id), "No se pudo actualizar la meta");
+    return { success: true };
+  }
+
+  async function deleteGoal(id) {
+    check(await client.from("goals").delete().eq("id", id), "No se pudo eliminar la meta");
+    return { success: true };
+  }
+
+  async function addGoalContribution(goalId, c) {
+    check(await client.from("goal_contributions").insert({
+      goal_id: goalId, amount: Number(c.amount), note: c.note || "", date: c.date
+    }), "No se pudo guardar el aporte");
+    return { success: true };
+  }
+
+  async function deleteGoalContribution(id) {
+    check(await client.from("goal_contributions").delete().eq("id", id), "No se pudo eliminar el aporte");
+    return { success: true };
+  }
+
   window.Data = {
     getProfile, saveProfile, uploadAvatar, removeAvatar, askAdvisor, getLastAdvice, saveLastAdvice, isAdmin, adminStats, adminGeo, setMyCountry, adminUsers,
     myPlan, adminPlans, adminSetPlan, scanReceipt,
@@ -444,6 +499,12 @@
     createCategory,
     updateCategory,
     deleteCategory,
+    getGoals,
+    createGoal,
+    updateGoal,
+    deleteGoal,
+    addGoalContribution,
+    deleteGoalContribution,
     importDB
   };
 

@@ -14,6 +14,7 @@
     ai:         ["Asesor IA sin límite mensual", "El plan Gratis incluye 3 consultas al mes con el asesor de IA. Con Pro puedes consultarlo cuando quieras."],
     scan:       ["Escaneo de boletas", "El plan Gratis incluye 3 boletas escaneadas al mes. Con Pro escaneas hasta 100 al mes."],
     history:    ["Historial y análisis completos", "El plan Gratis muestra el mes actual y 3 meses. Con Pro ves 6 y 12 meses, el año completo y todas las vistas (Pareto, 50/30/20, acumulado, mapa de calor)."],
+    goals:      ["Metas de ahorro ilimitadas", "El plan Gratis permite 2 metas activas. Con Pro creas todas las que quieras (casa, carro, viajes…) y las compartes con tu hogar."],
     currency:   ["Varias monedas", "Registra movimientos en otras monedas (viajes, compras en el extranjero) y Monetra los convierte por ti."]
   };
 
@@ -23,6 +24,7 @@
     ["Gráfico de análisis", "Mes actual y 3 meses", "6 y 12 meses, año y todas las vistas"],
     ["Asesor IA", "3 consultas al mes", "Sin límite mensual"],
     ["Escaneo de boletas", "3 al mes", "Hasta 100 al mes"],
+    ["Metas de ahorro", "Hasta 2", "Ilimitadas"],
     ["Hogar compartido", "—", "Incluido"],
     ["Monedas", "Una moneda a elegir", "Varias monedas"]
   ];

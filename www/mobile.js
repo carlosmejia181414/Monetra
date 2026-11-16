@@ -3,7 +3,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var bar = $("mobileBar"), sheet = $("moreSheet"), back = $("moreBack");
   if (!bar || !sheet) return;
-  var MORE = { categoriesSection: 1, analyticsSection: 1, profileSection: 1 };
+  var MORE = { categoriesSection: 1, analyticsSection: 1, goalsSection: 1, profileSection: 1 };
 
   function activeSection() {
     var b = document.querySelector(".nav-btn.active[data-section]");
