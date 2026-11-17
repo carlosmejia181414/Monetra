@@ -6,6 +6,8 @@
 - Plan Gratis: 2 metas activas. Pro: ilimitadas.
 - **Iconos automáticos** en las categorías según su nombre (ES/EN/FR).
 - **Iconos** en el celular de la landing page.
+- Quitamos las tarjetas de resumen (Ingresos, Gastos fijos…) en Categorías, Hogar, Perfil y Metas.
+- Brochure y manual (ES/EN/FR) actualizados con metas e iconos.
 
 ## Pasos
 1. Supabase > SQL Editor > New query > pega TODO `supabase/v10-metas.sql` > Run (se puede ejecutar varias veces; no borra datos).

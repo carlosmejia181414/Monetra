@@ -421,3 +421,30 @@ body[data-page="goalsSection"] .filters{display:none!important}
 [data-theme="light"] .goal-chip.done,[data-theme="light"] .goal-chip.ok{background:#e3f6ec;color:#0d6b43;border-color:#a8dcc3}
 [data-theme="light"] .goal-chip.behind,[data-theme="light"] .goal-chip.late,[data-theme="light"] .goal-err,[data-theme="light"] .goal-hist b.neg{background:transparent;color:#b3123f}
 [data-theme="light"] .goal-chip.behind,[data-theme="light"] .goal-chip.late{background:#fdecf0;border-color:#f5b8c7}
+
+/* Sin tarjetas de resumen en Categorías, Hogar y Perfil */
+body[data-page="profileSection"] .summary,body[data-page="categoriesSection"] .summary,body[data-page="householdSection"] .summary,body[data-page="goalsSection"] .summary{display:none!important}
+
+/* ---- Guía con IA ---- */
+#gdFab{position:fixed;right:20px;bottom:20px;z-index:4000;display:flex;align-items:center;gap:8px;padding:12px 18px;border-radius:99px;background:linear-gradient(135deg,#ff7a5c,#e8456b);color:#fff;font-weight:800;box-shadow:0 10px 30px rgba(232,69,107,.45)}
+#gdFab[hidden]{display:none}
+#gdFab svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#gdBox{position:fixed;right:20px;bottom:20px;z-index:4001;width:min(380px,calc(100vw - 24px));height:min(560px,calc(100vh - 40px));display:none;flex-direction:column;background:var(--menu-bg,#201c28);color:var(--text);border:1px solid var(--stroke);border-radius:20px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+#gdBox.open{display:flex}
+#gdHead{display:flex;align-items:center;gap:10px;padding:12px 14px;background:linear-gradient(135deg,#4a1a63,#e8456b);color:#fff}
+#gdHead img{width:30px;height:30px;border-radius:8px}
+#gdHead b{flex:1;display:flex;flex-direction:column;line-height:1.2;font-size:15px}#gdHead small{font-weight:400;opacity:.9;font-size:12px}
+#gdClose{width:36px;height:36px;min-height:0;padding:0;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;font-size:22px;box-shadow:none;border:0}
+#gdMsgs{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.gm{max-width:88%;padding:10px 13px;border-radius:16px;font-size:14.5px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+.gm.bot{align-self:flex-start;background:var(--glass2);border:1px solid var(--stroke)}
+.gm.me{align-self:flex-end;background:linear-gradient(135deg,#ff7a5c,#e8456b);color:#fff}
+.gm.err{align-self:flex-start;background:rgba(232,69,107,.14);border:1px solid rgba(232,69,107,.4);color:#ff9db3}
+.gm.typing{opacity:.7;font-style:italic}
+.gchips{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.gchips button{padding:8px 12px;min-height:36px;font-size:13.5px;border-radius:99px;background:var(--glass);color:var(--text);border:1px solid var(--stroke);box-shadow:none;text-align:left}
+#gdForm{display:flex;gap:8px;padding:10px;border-top:1px solid var(--stroke)}
+#gdIn{flex:1;min-height:44px}
+#gdForm button{padding:10px 16px}
+[data-theme="light"] .gm.err{color:#b3123f;background:#fdecf0;border-color:#f5b8c7}
+@media(max-width:900px){#gdFab{right:14px;bottom:calc(86px + env(safe-area-inset-bottom));padding:11px 14px}#gdBox{right:0;left:0;bottom:0;width:100%;height:calc(100vh - 70px);height:calc(100dvh - 70px);border-radius:20px 20px 0 0}}

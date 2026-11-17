@@ -347,6 +347,19 @@
   async function adminSetPlan(email, plan, days) {
     return check(await client.rpc("admin_set_plan", { p_email: email, p_plan: plan, p_days: days == null ? null : days }), "No se pudo cambiar el plan");
   }
+  async function askGuide(payload) {
+    const res = await client.functions.invoke("app-guide", { body: payload });
+    if (res.error) {
+      let msg = res.error.message || "", code = "";
+      try { const j = await res.error.context.json(); if (j && j.error) msg = j.error; if (j && j.code) code = j.code; } catch (e) {}
+      if (/not found|404|failed to send/i.test(msg)) code = code || "not_deployed";
+      const err = new Error(msg || "No se pudo consultar la guía.");
+      err.code = code;
+      throw err;
+    }
+    if (res.data && res.data.error) { const e = new Error(res.data.error); e.code = res.data.code || ""; throw e; }
+    return res.data;
+  }
   async function scanReceipt(payload) {
     const res = await client.functions.invoke("receipt-scan", { body: payload });
     if (res.error) {
@@ -480,7 +493,7 @@
 
   window.Data = {
     getProfile, saveProfile, uploadAvatar, removeAvatar, askAdvisor, getLastAdvice, saveLastAdvice, isAdmin, adminStats, adminGeo, setMyCountry, adminUsers,
-    myPlan, adminPlans, adminSetPlan, scanReceipt,
+    myPlan, adminPlans, adminSetPlan, scanReceipt, askGuide,
     getHousehold, setScope, getScope, createHousehold, joinHousehold, leaveHousehold,
     isConfigured,
     getSession,
