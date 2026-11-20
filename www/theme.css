@@ -371,7 +371,7 @@ body[data-page="profileSection"] .filters,body[data-page="categoriesSection"] .f
 .ci{display:inline-block;margin-right:6px;font-style:normal}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 /* ---- Metas de ahorro ---- */
-body[data-page="goalsSection"] .filters{display:none!important}
+body[data-page="goalsSection"] .filters,body[data-page="debtsSection"] .filters{display:none!important}
 .goals-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:16px;flex-wrap:wrap}
 .goals-head h3{margin:0 0 4px;font-size:22px}.goals-head p{margin:0;max-width:640px}
 .goals-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
@@ -423,7 +423,7 @@ body[data-page="goalsSection"] .filters{display:none!important}
 [data-theme="light"] .goal-chip.behind,[data-theme="light"] .goal-chip.late{background:#fdecf0;border-color:#f5b8c7}
 
 /* Sin tarjetas de resumen en Categorías, Hogar y Perfil */
-body[data-page="profileSection"] .summary,body[data-page="categoriesSection"] .summary,body[data-page="householdSection"] .summary,body[data-page="goalsSection"] .summary{display:none!important}
+body[data-page="profileSection"] .summary,body[data-page="categoriesSection"] .summary,body[data-page="householdSection"] .summary,body[data-page="goalsSection"] .summary,body[data-page="debtsSection"] .summary{display:none!important}
 
 /* ---- Guía con IA ---- */
 #gdFab{position:fixed;right:20px;bottom:20px;z-index:4000;display:flex;align-items:center;gap:8px;padding:12px 18px;border-radius:99px;background:linear-gradient(135deg,#ff7a5c,#e8456b);color:#fff;font-weight:800;box-shadow:0 10px 30px rgba(232,69,107,.45)}
@@ -448,3 +448,36 @@ body[data-page="profileSection"] .summary,body[data-page="categoriesSection"] .s
 #gdForm button{padding:10px 16px}
 [data-theme="light"] .gm.err{color:#b3123f;background:#fdecf0;border-color:#f5b8c7}
 @media(max-width:900px){#gdFab{right:14px;bottom:calc(86px + env(safe-area-inset-bottom));padding:11px 14px}#gdBox{right:0;left:0;bottom:0;width:100%;height:calc(100vh - 70px);height:calc(100dvh - 70px);border-radius:20px 20px 0 0}}
+
+/* ---- Deudas ---- */
+.debt-rate{font-weight:700}
+.debt-plan{margin-bottom:16px;grid-column:1/-1}.debt-plan h3{margin:0 0 4px}.debt-plan h4{margin:14px 0 6px}
+.debt-controls{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin:12px 0}
+.debt-controls label{margin:0;min-width:180px}.debt-controls .seg{display:flex;gap:8px;margin:0;background:none;padding:0}.debt-controls .seg-i{position:relative;margin:0}
+.debt-controls .seg-i input{position:absolute;opacity:0;inset:0;min-height:0}
+.debt-controls .seg-i span{display:block;padding:10px 16px;border-radius:12px;border:2px solid var(--stroke);font-weight:700}
+.debt-controls .seg-i input:checked+span{border-color:#ffcf4a;background:var(--glass2)}.debt-controls .seg-i input:focus-visible+span{outline:2px solid #ffcf4a}
+.debt-res{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:10px 0}.gs-tile small{display:block;color:var(--muted);margin-top:2px}
+.debt-save{margin:8px 0;font-weight:600}.debt-warn{color:#ff9db3;font-weight:600}
+.debt-order{list-style:none;margin:0;padding:0;display:grid;gap:6px}.debt-order li{display:flex;gap:10px;align-items:center}
+.debt-order .n{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ff7a5c,#e8456b);color:#fff;font-weight:800;font-size:13px}
+.debt-lock{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:10px}.debt-lock>div{flex:1;min-width:200px}.debt-lock p{margin:2px 0 0}
+.debt-card .goal-bar i{background:linear-gradient(90deg,#4a1a63,#2ea06e)}
+.goal-form select{width:100%}
+[data-theme="light"] .debt-warn{color:#b3123f}
+@media(max-width:900px){.debt-res{grid-template-columns:1fr}.debt-controls label{min-width:100%}}
+.debt-controls .seg{flex-wrap:wrap}.debt-controls .seg-i{flex:1 1 140px}.debt-controls .seg-i span{text-align:center;padding:10px 12px}
+@media(max-width:900px){.debt-controls{display:block}.debt-controls .seg{margin-top:10px}}
+.debt-controls .seg-i span{color:var(--text)}
+
+/* Privacidad y zona de peligro */
+.danger-zone{margin-top:16px}
+.danger-zone h3{margin:0 0 6px}
+.danger-zone .legal-links a{color:inherit;text-decoration:underline}
+button.danger{background:#c62828;color:#fff;border:1px solid #c62828}
+button.danger:hover:not(:disabled){background:#a81f1f}
+button.danger:disabled{opacity:.45;cursor:not-allowed}
+.site-legal{max-width:880px;margin:0 auto;padding:12px 20px;font-size:.85rem;text-align:center}
+.site-legal a{color:inherit;text-decoration:underline;margin:0 6px}
+
+.legal-note{font-size:.78rem;opacity:.8;text-align:center;margin:10px 0 0;line-height:1.4}.legal-note a{color:inherit;text-decoration:underline}

@@ -62,5 +62,9 @@
   };
   const goal = key => GOAL_ICONS[key] || GOAL_ICONS.target;
 
-  window.MonetraIcons = { cat, goal, GOAL_ICONS, norm };
+  // Deudas: tipo guardado en la base -> emoji
+  const DEBT_ICONS = { card: "💳", loan: "🏦", mortgage: "🏠", car: "🚗", student: "🎓", personal: "🤝", line: "🧾", other: "📄" };
+  const debt = key => DEBT_ICONS[key] || DEBT_ICONS.other;
+
+  window.MonetraIcons = { cat, goal, GOAL_ICONS, debt, DEBT_ICONS, norm };
 })();

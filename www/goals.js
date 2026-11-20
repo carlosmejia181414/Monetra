@@ -244,7 +244,7 @@
 
   document.addEventListener("click", async ev => {
     const t = ev.target;
-    if (!t.closest) return;
+    if (!t.closest || !t.closest("#goalsSection")) return;
     if (t.closest("#goalNewBtn")) { newGoal(null); return; }
     const tpl = t.closest("[data-template]");
     if (tpl) { const [k, n] = tpl.dataset.template.split("|"); newGoal([k, n]); return; }

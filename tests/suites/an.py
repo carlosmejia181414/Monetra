@@ -1,0 +1,50 @@
+exec(open('/tmp/t/mb.py').read().split('async def m():')[0])
+async def m():
+  async with async_playwright() as p:
+    b=await p.chromium.launch()
+    # mobile: + Nueva stays open when keyboard resizes viewport height
+    pg=await run(b,'light','es')
+    await pg.click('#newCatBtn');await pg.wait_for_timeout(200)
+    await pg.set_viewport_size({'width':390,'height':480});await pg.wait_for_timeout(900)
+    ok(await pg.is_visible('#inlineCat'),'+ Nueva panel survives keyboard resize')
+    await pg.fill('#inlineCatName','Gimnasio');ok(await pg.input_value('#inlineCatName')=='Gimnasio','can type name')
+    await pg.set_viewport_size({'width':390,'height':800})
+    # filters hidden in profile/categories/household
+    for sec in ['profileSection','categoriesSection','householdSection','analyticsSection']:
+        await pg.click('#mobileBar #mbMore');await pg.wait_for_timeout(300)
+        sel='#moreSheet [data-go="%s"]'%sec if sec!='householdSection' else None
+        if sel and await pg.locator(sel).count():
+            await pg.click(sel)
+        else:
+            await pg.click('#mobileBar [data-go="%s"]'%sec)
+        await pg.wait_for_timeout(500)
+        vis=await pg.is_visible('.filters')
+        ok(vis==(sec=='analyticsSection'),f'filters visible={vis} in {sec}')
+    await pg.wait_for_timeout(600)
+    ok(await pg.evaluate("document.querySelectorAll('#anKpis .an-kpi').length")==4,'4 KPI cards')
+    ok(await pg.evaluate("!!Chart.getChart('anTrend')")and await pg.evaluate("!!Chart.getChart('anDonut')"),'trend + donut charts exist')
+    ok(await pg.evaluate("document.querySelectorAll('#anTop .an-bar').length")>0,'top categories bars')
+    await pg.click('#anRange [data-n="3"]');await pg.wait_for_timeout(400)
+    ok(await pg.evaluate("Chart.getChart('anTrend').data.labels.length")==3,'3-month filter -> 3 points')
+    await pg.click('#anRange [data-n="12"]');await pg.wait_for_timeout(400)
+    print('  12 labels:',await pg.evaluate("Chart.getChart('anTrend').data.labels.length"))
+    ok(await pg.evaluate("document.documentElement.scrollWidth<=innerWidth+1"),'no horizontal overflow')
+    await pg.evaluate("document.querySelector('#analyticsSection').scrollIntoView()");await pg.wait_for_timeout(300)
+    await pg.screenshot(path='/tmp/t/an_m.png',full_page=False)
+    await pg.close()
+    # desktop
+    c=await b.new_context(viewport={'width':1360,'height':900})
+    await c.add_init_script("localStorage.setItem('monetra_theme','light');localStorage.setItem('mb_lang','es');sessionStorage.setItem('mb_splash','1')")
+    await c.route('**/data.js*',lambda r:r.fulfill(body=fake,content_type='application/javascript'))
+    await c.route('**/config.js*',lambda r:r.fulfill(body='window.APP_CONFIG={SUPABASE_URL:"https://x.supabase.co",SUPABASE_ANON_KEY:"k"};',content_type='application/javascript'))
+    await c.route('**/open.er-api.com/**',lambda r:r.fulfill(body='{"result":"success","rates":{"USD":1,"CAD":1.4}}',content_type='application/json'))
+    await c.route('**/fonts.g*',lambda r:r.abort())
+    d=await c.new_page();d.on('pageerror',lambda e:(print('ERR',e),errs.append(str(e))));await d.goto('http://127.0.0.1:8132/app.html');await d.wait_for_timeout(2300)
+    box=await d.evaluate("(()=>{const r=[...document.querySelectorAll('#transactionForm .form-grid>label')].map(l=>{const f=l.querySelector('input,select');return Math.round(f.getBoundingClientRect().top)});return r})()")
+    print('  form control tops',box); ok(len(set(box[:4]))==1,'form controls aligned')
+    await d.screenshot(path='/tmp/t/form_d.png',clip={'x':260,'y':200,'width':1100,'height':420})
+    await d.click('.nav-btn[data-section="analyticsSection"]');await d.wait_for_timeout(900)
+    await d.screenshot(path='/tmp/t/an_d.png',full_page=True)
+    await b.close()
+  print('FAILS',errs)
+asyncio.run(m())

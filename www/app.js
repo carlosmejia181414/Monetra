@@ -1686,6 +1686,7 @@ function showSection(sectionId) {
     chartsSection: "Gráficos",
     analyticsSection: "Data analytics",
     goalsSection: "Metas de ahorro",
+    debtsSection: "Deudas",
     advisorSection: "Asesor financiero IA",
     householdSection: "Hogar",
     profileSection: "Mi perfil"

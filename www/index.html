@@ -3,12 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="google" content="notranslate" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://open.er-api.com https://api.frankfurter.app; object-src 'none'; base-uri 'self'; form-action 'self'" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Monetra</title>
-  <meta name="description" content="Monetra - control de finanzas personales" />
+  <meta name="description" content="Monetra: controla tus ingresos y gastos, fija metas de ahorro, sal de deudas y recibe consejos de IA. En español, inglés y francés. Gratis para empezar." />
+  <link rel="canonical" href="https://carlosmejia181414.github.io/Monetra/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Monetra" />
+  <meta property="og:title" content="Monetra - control de finanzas personales" />
+  <meta property="og:description" content="Ingresos, gastos, metas de ahorro, deudas y asesor de IA en una sola app." />
+  <meta property="og:url" content="https://carlosmejia181414.github.io/Monetra/" />
+  <meta property="og:image" content="https://carlosmejia181414.github.io/Monetra/logo.png" />
+  <meta name="twitter:card" content="summary" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Monetra","applicationCategory":"FinanceApplication","operatingSystem":"Web","inLanguage":["es","en","fr"],"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"url":"https://carlosmejia181414.github.io/Monetra/"}</script>
   <link rel="icon" type="image/png" href="favicon.png" />
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
   <meta name="theme-color" content="#fff4f0" />
   <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" /><noscript><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" /></noscript>
@@ -80,7 +89,7 @@
 </head>
 <body>
   <header class="nav"><div class="wrap">
-    <a class="logo" href="#top"><img src="logo.png?v=19" alt="" />Monetra</a>
+    <a class="logo" href="#top"><img src="logo.png?v=23" alt="" />Monetra</a>
     <nav class="links"><a href="#features">Funciones</a><a href="#how">Cómo funciona</a><a href="#ai">Asesor IA</a><a href="#home">Hogar</a><a href="#plans" data-en="Plans" data-fr="Forfaits">Planes</a><a href="#downloads" data-en="Downloads" data-fr="Téléchargements">Descargas</a><a href="#faq">Preguntas</a></nav>
     <div class="lang-switch" data-lang-switch></div>
     <a href="app.html" data-track="click_login" class="btn line sm hide-xs">Iniciar sesión</a>
@@ -218,30 +227,30 @@
       <details><summary>¿Es gratis?</summary><p>Sí. Puedes crear tu cuenta y usar Monetra sin costo.</p></details>
       <details><summary>¿Mis datos son privados?</summary><p>Sí. Cada cuenta ve solo su información; el hogar solo se comparte con quien tenga tu código.</p></details>
       <details><summary>¿Funciona sin internet?</summary><p>Necesitas conexión para guardar y sincronizar tus movimientos.</p></details>
-      <details><summary>¿Puedo instalarla en mi celular?</summary><p>Sí. Ábrela en el navegador de tu celular y agrégala a la pantalla de inicio desde el menú del navegador.</p></details>
+      <details><summary>¿Hay app para el celular?</summary><p>Funciona en el navegador de tu celular y de tu computadora. La app para Android y iPhone viene pronto.</p></details>
     </div></section>
 
     <div class="wrap"><div class="final"><h2>Empieza a ordenar tus finanzas hoy</h2><p>Crea tu cuenta gratis.</p><a href="app.html#signup" data-track="click_signup" class="btn">Empezar gratis</a></div></div>
   </main>
 
   <footer><div class="wrap">
-    <a class="logo" href="#top"><img src="logo.png?v=19" alt="" />Monetra</a>
+    <a class="logo" href="#top"><img src="logo.png?v=23" alt="" />Monetra</a>
     <span>© 2026 Monetra. Todos los derechos reservados.</span>
-    <nav><a href="app.html">Iniciar sesión</a><a href="app.html#signup">Crear cuenta</a></nav>
+    <nav><a href="app.html">Iniciar sesión</a><a href="app.html#signup">Crear cuenta</a><a href="privacidad.html">Política de privacidad</a><a href="terminos.html">Términos de uso</a></nav>
   </div></footer>
 
 
   <!-- Asistente de la landing (función site-agent) -->
   <button id="chatFab" type="button" hidden><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/></svg><span id="chatFabTxt">¿Dudas?</span></button>
   <div id="chatBox" role="dialog" aria-label="Asistente Monetra">
-    <div id="chatHead"><img src="logo.png?v=19" alt=""><b><span id="chatTitle">Asistente Monetra</span><small id="chatSub">Pregúntame sobre la app</small></b><button id="chatClose" type="button" aria-label="Cerrar">×</button></div>
+    <div id="chatHead"><img src="logo.png?v=23" alt=""><b><span id="chatTitle">Asistente Monetra</span><small id="chatSub">Pregúntame sobre la app</small></b><button id="chatClose" type="button" aria-label="Cerrar">×</button></div>
     <div id="chatMsgs"></div>
     <form id="chatForm" autocomplete="off"><input id="chatIn" maxlength="500" /><button id="chatSend" type="submit">Enviar</button></form>
   </div>
 
-  <script src="i18n.js?v=19"></script>
-  <script src="config.js?v=19"></script>
-  <script src="track.js?v=19"></script>
+  <script src="i18n.js?v=23"></script>
+  <script src="config.js?v=23"></script>
+  <script src="track.js?v=23"></script>
   <script>
   (function () {
     var cfg = window.APP_CONFIG || {};
@@ -295,6 +304,13 @@
       if (l !== "en" && l !== "fr") l = "es";
       document.querySelectorAll("a[data-doc]").forEach(function (a) { a.setAttribute("href", "docs/" + a.getAttribute("data-doc") + "-" + l + ".pdf"); });
     })();
+    // Aviso tras eliminar la cuenta
+    if (/[?&]cuenta=eliminada/.test(location.search)) {
+      var bn = document.createElement("div"); bn.setAttribute("role", "status");
+      bn.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:99;background:#2e7d32;color:#fff;padding:12px 16px;text-align:center;font-size:.95rem";
+      bn.textContent = (window.T || function (s) { return s; })("Tu cuenta y tus datos fueron eliminados.");
+      document.body.appendChild(bn); setTimeout(function () { bn.remove(); }, 8000);
+    }
     // En la app instalada (APK o pantalla de inicio) se abre directo la app.
     const native = false;
     const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;

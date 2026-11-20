@@ -148,6 +148,36 @@
     $("profRemove").addEventListener("click", onRemovePhoto);
     $("profForm").addEventListener("submit", onSaveName);
     $("profLogout").addEventListener("click", () => $("logoutBtn").click());
+    $("profExport").addEventListener("click", () => $("exportBtn").click());
+    $("profDelete").addEventListener("click", onDeleteAccount);
+  }
+
+  // Privacidad: descargar datos y eliminar cuenta
+  function onDeleteAccount() {
+    const T = window.T || (x => x), esc = x => String(x).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const email = (profile && profile.email) || $("profEmail").textContent || "";
+    MonetraPlan.show(`<h3>${esc(T("Eliminar mi cuenta y mis datos"))}</h3>
+      <p>${esc(T("Se borrarán para siempre tus movimientos, categorías, metas, deudas, perfil y foto. No se puede deshacer."))}</p>
+      <p class="muted small">${esc(T("Si compartes un hogar, lo que registraste allí se conserva para los demás miembros."))}</p>
+      <p><button type="button" class="secondary sm" id="delExport">${esc(T("Descargar mis datos primero"))}</button></p>
+      <label>${esc(T("Para confirmar, escribe tu correo:"))} <b translate="no">${esc(email)}</b>
+        <input type="email" id="delConfirm" autocomplete="off" placeholder="${esc(email)}" /></label>
+      <p id="delErr" class="prof-msg"></p>
+      <div class="modal-actions"><button type="button" class="danger" id="delGo" disabled>${esc(T("Eliminar definitivamente"))}</button><button type="button" class="secondary" data-close>${esc(T("Cancelar"))}</button></div>`);
+    const inp = document.getElementById("delConfirm"), go = document.getElementById("delGo");
+    inp.addEventListener("input", () => { go.disabled = inp.value.trim().toLowerCase() !== email.trim().toLowerCase() || !email; });
+    document.getElementById("delExport").addEventListener("click", () => $("exportBtn").click());
+    go.addEventListener("click", async () => {
+      go.disabled = true; go.textContent = T("Eliminando…");
+      try {
+        await Data.deleteAccount();
+        try { ["monetra_scope", "mb_sid", "mb_cc", "monetra_last_advice"].forEach(k => { localStorage.removeItem(k); sessionStorage.removeItem(k); }); } catch (e) {}
+        location.replace("index.html?cuenta=eliminada");
+      } catch (e) {
+        document.getElementById("delErr").textContent = (e && e.message) || T("No se pudo eliminar la cuenta");
+        go.disabled = false; go.textContent = T("Eliminar definitivamente");
+      }
+    });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 

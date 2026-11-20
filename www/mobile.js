@@ -3,7 +3,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var bar = $("mobileBar"), sheet = $("moreSheet"), back = $("moreBack");
   if (!bar || !sheet) return;
-  var MORE = { categoriesSection: 1, analyticsSection: 1, goalsSection: 1, profileSection: 1 };
+  var MORE = { categoriesSection: 1, analyticsSection: 1, goalsSection: 1, debtsSection: 1, profileSection: 1 };
 
   function activeSection() {
     var b = document.querySelector(".nav-btn.active[data-section]");
@@ -61,4 +61,19 @@
   document.addEventListener("monetra:plan", pro);
   setInterval(pro, 4000);
   sync();
+})();
+
+// Accesibilidad: el foco con Tab se queda dentro de la ventana (modal) abierta.
+(function () {
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Tab") return;
+    var modals = [].slice.call(document.querySelectorAll(".modal")).filter(function (m) { return m.offsetParent !== null || m.getClientRects().length; });
+    var m = modals[modals.length - 1]; if (!m) return;
+    var f = [].slice.call(m.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')).filter(function (x) { return !x.disabled && x.offsetParent !== null; });
+    if (!f.length) return;
+    var first = f[0], last = f[f.length - 1], a = document.activeElement;
+    if (!m.contains(a)) { e.preventDefault(); first.focus(); }
+    else if (e.shiftKey && a === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && a === last) { e.preventDefault(); first.focus(); }
+  });
 })();

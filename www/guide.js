@@ -12,6 +12,7 @@
         chartsSection: ["¿Cómo cambio el gráfico?", "¿Qué es el Pareto 80/20?", "¿Qué vistas son Pro?"],
         analyticsSection: ["¿Qué significa mi score?", "¿Qué es la regla 50/30/20?", "¿Cómo leo el comparativo?"],
         goalsSection: ["¿Cómo creo una meta?", "¿Cómo aporto a una meta?", "¿Qué significa «Vas atrasado»?"],
+        debtsSection: ["¿Cómo registro una deuda?", "¿Cómo anoto un pago?", "¿Qué es avalancha y bola de nieve?"],
         advisorSection: ["¿Cómo uso el asesor IA?", "¿Cuántas consultas tengo?", "¿Qué datos se envían a la IA?"],
         householdSection: ["¿Cómo creo un hogar?", "¿Cómo invito a mi pareja?", "¿Qué ve cada persona?"],
         profileSection: ["¿Cómo cambio mi moneda?", "¿Cómo cambio el idioma?", "¿Cómo cierro sesión?"] } },
@@ -25,6 +26,7 @@
         chartsSection: ["How do I change the chart?", "What is the 80/20 Pareto?", "Which views are Pro?"],
         analyticsSection: ["What does my score mean?", "What is the 50/30/20 rule?", "How do I read the comparison?"],
         goalsSection: ["How do I create a goal?", "How do I contribute to a goal?", "What does “Behind schedule” mean?"],
+        debtsSection: ["How do I add a debt?", "How do I log a payment?", "What are avalanche and snowball?"],
         advisorSection: ["How do I use the AI advisor?", "How many queries do I have?", "What data is sent to the AI?"],
         householdSection: ["How do I create a household?", "How do I invite my partner?", "What does each person see?"],
         profileSection: ["How do I change my currency?", "How do I change the language?", "How do I sign out?"] } },
@@ -38,6 +40,7 @@
         chartsSection: ["Comment changer le graphique ?", "Qu'est-ce que le Pareto 80/20 ?", "Quelles vues sont Pro ?"],
         analyticsSection: ["Que signifie mon score ?", "Qu'est-ce que la règle 50/30/20 ?", "Comment lire la comparaison ?"],
         goalsSection: ["Comment créer un objectif ?", "Comment verser à un objectif ?", "Que veut dire « En retard » ?"],
+        debtsSection: ["Comment ajouter une dette ?", "Comment noter un paiement ?", "Avalanche et boule de neige ?"],
         advisorSection: ["Comment utiliser le conseiller IA ?", "Combien de requêtes ai-je ?", "Quelles données sont envoyées à l'IA ?"],
         householdSection: ["Comment créer un foyer ?", "Comment inviter mon conjoint ?", "Que voit chaque personne ?"],
         profileSection: ["Comment changer ma devise ?", "Comment changer la langue ?", "Comment me déconnecter ?"] } }

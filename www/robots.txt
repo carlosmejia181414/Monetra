@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /app.html
+Disallow: /admin.html
+Disallow: /diagnostico.html
+
+Sitemap: https://carlosmejia181414.github.io/Monetra/sitemap.xml

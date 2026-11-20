@@ -34,6 +34,10 @@
     if (/\bgoals\b|goal_contributions/.test(msg) && (error.code === "42P01" || error.code === "PGRST205" || error.code === "PGRST200")) {
       return new Error("Falta ejecutar supabase/v10-metas.sql en el SQL Editor de Supabase.");
     }
+    if (/limit_debts/.test(msg)) { const e = new Error("Llegaste al límite de deudas del plan Gratis."); e.code = "limit_debts"; return e; }
+    if (/\bdebts\b|debt_payments/.test(msg) && (error.code === "42P01" || error.code === "PGRST205" || error.code === "PGRST200")) {
+      return new Error("Falta ejecutar supabase/v12-deudas.sql en el SQL Editor de Supabase.");
+    }
     if (/household_id|households|household_members/.test(msg) || error.code === "42703" || error.code === "42P01" || error.code === "PGRST205") {
       return new Error("La base de datos no está actualizada: ejecuta supabase/hogar.sql en el SQL Editor de Supabase.");
     }
@@ -434,6 +438,18 @@
     return url;
   }
 
+  async function deleteAccount() {
+    const u = await sessionUser();
+    try { await client.storage.from("avatars").remove([u.id + "/avatar.jpg"]); } catch (e) { /* no había foto */ }
+    const { error } = await client.rpc("delete_my_account");
+    if (error) {
+      if (error.code === "42883" || error.code === "PGRST202") throw new Error("Falta ejecutar supabase/v14-privacidad.sql en el SQL Editor de Supabase.");
+      throw friendly(error, "No se pudo eliminar la cuenta");
+    }
+    unsubscribe();
+    try { await client.auth.signOut(); } catch (e) { /* la cuenta ya no existe */ }
+  }
+
   async function removeAvatar() {
     const u = await sessionUser();
     await client.storage.from("avatars").remove([u.id + "/avatar.jpg"]);
@@ -491,8 +507,54 @@
     return { success: true };
   }
 
+  // ---------- Deudas ----------
+  const DEBT_SEL = "*, debt_payments(id, amount, note, date, user_id)";
+  const debtFromRow = (r, uid) => ({
+    id: r.id, name: r.name, kind: r.kind, start: Number(r.start_balance), rate: Number(r.interest_rate), minPayment: Number(r.min_payment),
+    dueDay: r.due_day == null ? null : Number(r.due_day), archived: !!r.archived, shared: !!r.household_id, createdAt: r.created_at,
+    payments: (r.debt_payments || []).map(c => ({ id: c.id, amount: Number(c.amount), note: c.note || "", date: c.date, mine: c.user_id === uid }))
+      .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
+  });
+  async function getDebts() {
+    const sess = await client.auth.getSession();
+    const uid = sess && sess.data && sess.data.session ? sess.data.session.user.id : null;
+    const res = await scoped(client.from("debts").select(DEBT_SEL).order("created_at", { ascending: true }));
+    return check(res, "No se pudieron cargar las deudas").map(r => debtFromRow(r, uid));
+  }
+  async function createDebt(d) {
+    const res = await client.from("debts").insert({
+      household_id: hid(), name: String(d.name || "").trim(), kind: d.kind || "other", start_balance: Number(d.start),
+      interest_rate: Number(d.rate) || 0, min_payment: Number(d.minPayment) || 0, due_day: d.dueDay ? Number(d.dueDay) : null
+    }).select(DEBT_SEL).single();
+    return debtFromRow(check(res, "No se pudo guardar la deuda"), null);
+  }
+  async function updateDebt(id, d) {
+    const patch = {};
+    if (d.name != null) patch.name = String(d.name).trim();
+    if (d.kind != null) patch.kind = d.kind;
+    if (d.start != null) patch.start_balance = Number(d.start);
+    if (d.rate != null) patch.interest_rate = Number(d.rate) || 0;
+    if (d.minPayment != null) patch.min_payment = Number(d.minPayment) || 0;
+    if (d.dueDay !== undefined) patch.due_day = d.dueDay ? Number(d.dueDay) : null;
+    if (d.archived != null) patch.archived = !!d.archived;
+    check(await client.from("debts").update(patch).eq("id", id), "No se pudo actualizar la deuda");
+    return { success: true };
+  }
+  async function deleteDebt(id) {
+    check(await client.from("debts").delete().eq("id", id), "No se pudo eliminar la deuda");
+    return { success: true };
+  }
+  async function addDebtPayment(debtId, c) {
+    check(await client.from("debt_payments").insert({ debt_id: debtId, amount: Number(c.amount), note: c.note || "", date: c.date }), "No se pudo guardar el pago");
+    return { success: true };
+  }
+  async function deleteDebtPayment(id) {
+    check(await client.from("debt_payments").delete().eq("id", id), "No se pudo eliminar el pago");
+    return { success: true };
+  }
+
   window.Data = {
-    getProfile, saveProfile, uploadAvatar, removeAvatar, askAdvisor, getLastAdvice, saveLastAdvice, isAdmin, adminStats, adminGeo, setMyCountry, adminUsers,
+    getProfile, saveProfile, uploadAvatar, removeAvatar, deleteAccount, askAdvisor, getLastAdvice, saveLastAdvice, isAdmin, adminStats, adminGeo, setMyCountry, adminUsers,
     myPlan, adminPlans, adminSetPlan, scanReceipt, askGuide,
     getHousehold, setScope, getScope, createHousehold, joinHousehold, leaveHousehold,
     isConfigured,
@@ -518,6 +580,7 @@
     deleteGoal,
     addGoalContribution,
     deleteGoalContribution,
+    getDebts, createDebt, updateDebt, deleteDebt, addDebtPayment, deleteDebtPayment,
     importDB
   };
 
